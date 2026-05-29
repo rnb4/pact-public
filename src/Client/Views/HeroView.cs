@@ -1,5 +1,7 @@
+using System.Linq;
 using Godot;
 using Pact.Shared.Snapshot;
+using Pact.Shared.State.Entities;
 
 namespace Pact.Client.Views;
 
@@ -12,23 +14,27 @@ public partial class HeroView : View
     [Export] public StringName IdleAnimation { get; set; } = "idle";
     [Export] public float RunThreshold = 64f;
     [Export] public float IdleThreshold = 0.5f;
-
+    
+    private Vector2 _moveDelta;
     private FacingDirection _facing;
     private bool _isCasting;
 
     public override void _Ready()
     {
-        Sprite = GetNode<AnimatedSprite2D>("%AnimatedSprite2D");
         base._Ready();
         Sprite.AnimationFinished += () => { _isCasting = false; };
+        var material = new ShaderMaterial();
+        material.Shader = GD.Load<Shader>("res://assets/shaders/outline.gdshader");
+        Sprite.Material = material;
     }
 
     public override void _Process(double delta)
     {
-        if (!ClientRoot.Instance.GameState.Heroes.TryGetValue(Id, out var entity)) return;
+        
+        if (!ClientRoot.Instance.GameState.Entities.TryGet(Id, out var e) || e is not HeroState entity) return;
 
         SmoothedPosition = SmoothedPosition.Lerp(entity.Position, PositionSmoothing * (float)delta);
-        MoveDelta = SmoothedPosition - GlobalPosition;
+        _moveDelta = SmoothedPosition - GlobalPosition;
         GlobalPosition = SmoothedPosition;
         
         if (!Mathf.IsZeroApprox(entity.LookDirection.LengthSquared()))
@@ -39,7 +45,7 @@ public partial class HeroView : View
 
         if (_isCasting) return;
 
-        if (MoveDelta.LengthSquared() > IdleThreshold)
+        if (_moveDelta.LengthSquared() > IdleThreshold)
             PlayWithFacing(entity.Speed > RunThreshold ? RunAnimation : WalkAnimation);
         else
             PlayWithFacing(IdleAnimation);
@@ -56,4 +62,7 @@ public partial class HeroView : View
     {
         Sprite.Play(name + "_" + _facing.ToString().ToLower(), speed);
     }
+    
+    public void Highlight() => Sprite.Material.Set("shader_parameter/width", 1);
+    public void UnHighlight() => Sprite.Material.Set("shader_parameter/width", 0);
 }

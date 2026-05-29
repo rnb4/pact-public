@@ -1,5 +1,5 @@
 using Godot;
-using HeroState = Pact.Shared.State.Entities.HeroState;
+using Pact.Shared.State.Entities;
 
 namespace Pact.Models;
 

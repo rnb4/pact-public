@@ -1,4 +1,4 @@
-namespace Pact.Shared.Snapshot;
+namespace Pact.Shared.State.Entities;
 
 public enum EntityType
 {

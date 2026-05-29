@@ -27,7 +27,7 @@ public class MoveHandler : IRequestHandler<MoveRequest>
         }
         
         PathfinderOp.RequestPath(ref hero, request.Destination);
-        Runtime.Instance.GameState.Heroes.Set(request.EntityId, hero);
+        Runtime.Instance.GameState.Entities.Set(request.EntityId, hero);
         ActionDomain.QueuedActions.Remove(request.EntityId);
         return Result.Ok;
     }

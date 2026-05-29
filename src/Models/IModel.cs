@@ -4,5 +4,5 @@ namespace Pact.Models;
 
 public interface IModel
 {
-    public StringName Id { get; set; }
+    public StringName ModelId { get; set; }
 }

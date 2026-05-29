@@ -5,4 +5,4 @@ namespace Pact.Server.Contexts;
 
 public abstract partial record Target;
 public record GroundTarget(Vector2 Position) : Target;
-public record EntityTarget(IEntity Entity) : Target;
+public record EntityTarget(Entity Entity) : Target;

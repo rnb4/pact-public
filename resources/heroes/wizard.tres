@@ -9,6 +9,5 @@ script = ExtResource("2_yu340")
 Name = "Wizard"
 ViewScene = ExtResource("1_2287h")
 BasicAttack = ExtResource("1_yu340")
-MoveSpeed = 5.0
-Id = &"wizard"
+MoveSpeed = 4.5
 metadata/_custom_type_script = "uid://wh8k0hm5nybe"

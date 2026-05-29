@@ -2,6 +2,7 @@ using Pact.AutoLoad;
 using Pact.Server.Contexts;
 using Pact.Server.Domains;
 using Pact.Server.Operations;
+using Pact.Shared.State.Entities;
 
 namespace Pact.Server.Systems;
 
@@ -23,18 +24,20 @@ public class AbilityCastSystem : ISystem
             {
                 case EntityTarget { Entity: var entity}:
                 {
-                    if (!Runtime.GameState.Heroes.TryGet(entity.EntityId, out var targetEntity) || !targetEntity.IsAlive())
+                    if (!Runtime.GameState.Entities.TryGet(entity.EntityId, out var targetEntity) 
+                        || targetEntity is not HeroState hero 
+                        || !hero.IsAlive())
                     {
                         casts.RemoveAt(i);
                         continue;
                     }
                     AbilityDomain.StartCooldown(cast.CasterId, cast.Slot, cast.AbilityModel.Cooldown);
-                    AbilityDomain.ApplyTrigger(cast.Trigger, ref targetEntity);
+                    AbilityDomain.ApplyTrigger(cast.Trigger, cast.CasterId, ref hero);
                     break;
                 }
                 case GroundTarget { Position: var position}:
                     AbilityDomain.StartCooldown(cast.CasterId, cast.Slot, cast.AbilityModel.Cooldown);
-                    AbilityDomain.ApplyTrigger(cast.Trigger, position);
+                    AbilityDomain.ApplyTrigger(cast.Trigger, cast.CasterId, position);
                     break;
             }
 

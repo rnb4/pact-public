@@ -1,3 +1,4 @@
+using System.Linq;
 using Godot;
 using Pact.AutoLoad;
 using Pact.Client.Views;
@@ -13,13 +14,16 @@ public partial class InputManager : Node2D
 {
     private static readonly float HeroPickRadius = 1f.UnitsToPixels();
     
-    private EntityId HoveredEntityId { get; set; }
-    private View? PreviousHoveredEntity { get; set; }
+    private HeroView? _hoveredHero;
 
     public override void _Process(double delta)
     {
-        HoveredEntityId = UpdateHoveredEntity();
-        UpdateHighlightedView();
+        ClientRoot.Instance.TryGetView(UpdateHoveredEntity(), out var view);
+        var next = view as HeroView;
+        if (next == _hoveredHero) return;
+        _hoveredHero?.UnHighlight();
+        _hoveredHero = next;
+        _hoveredHero?.Highlight();
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -30,13 +34,13 @@ public partial class InputManager : Node2D
         var localEntityId = NetworkManager.Instance.LocalEntityId;
         if (localEntityId == EntityId.None) return;
 
-        if (Input.IsActionJustPressed("basic_attack") && HoveredEntityId != EntityId.None && HoveredEntityId != localEntityId)
+        if (Input.IsActionJustPressed("basic_attack") && _hoveredHero != null && _hoveredHero.Id != localEntityId)
         {
             NetworkManager.Instance.SendRequest(new AbilityRequest
             {
                 EntityId = (EntityId)localEntityId,
                 Slot = AbilitySlot.Basic,
-                TargetEntityId = HoveredEntityId,
+                TargetEntityId = _hoveredHero.Id,
             });
             return;
         }
@@ -61,7 +65,7 @@ public partial class InputManager : Node2D
 
         NetworkManager.Instance.SendRequest(new AbilityRequest
         {
-            EntityId = (EntityId)localEntityId,
+            EntityId = localEntityId,
             Slot = slot.Value,
         });
     }
@@ -70,7 +74,7 @@ public partial class InputManager : Node2D
     {
         var best = EntityId.None;
         var bestDistance = HeroPickRadius;
-        foreach (var hero in ClientRoot.Instance.GameState.Heroes.Values)
+        foreach (var (_, hero) in ClientRoot.Instance.GameState.Heroes())
         {
             var distance = hero.Position.DistanceTo(GetGlobalMousePosition());
             if (distance < bestDistance)
@@ -82,12 +86,5 @@ public partial class InputManager : Node2D
         return best;
     }
 
-    private void UpdateHighlightedView()
-    {
-        ClientRoot.Instance.TryGetView(HoveredEntityId, out var view);
-        if (view == PreviousHoveredEntity) return;
-        PreviousHoveredEntity?.UnHighlight();
-        view?.Highlight();
-        PreviousHoveredEntity = view;
-    }
+
 }

@@ -1,16 +1,17 @@
 using Godot;
+using Pact.Server.Repos;
 
 namespace Pact.Server.Systems;
 
 public class MovementSystem : ISystem
 {
-    private static Runtime Runtime => Runtime.Instance;
+    private static GameState GameState => Runtime.Instance.GameState;
     
     // TODO: Add boidslike for avoidance
 
     public void Tick(double delta)
     {
-        foreach (var (id, entity) in Runtime.GameState.Heroes.All())
+        foreach (var (id, entity) in GameState.Heroes())
         {
             if (entity.Path.IsEmpty() || entity.PathIndex >= entity.Path.Length) continue;
             
@@ -34,7 +35,7 @@ public class MovementSystem : ISystem
 
             if (!Mathf.IsZeroApprox(updated.MoveDirection.LengthSquared()))
                 updated.LookDirection = updated.MoveDirection;
-            Runtime.GameState.Heroes.Set(id, updated);
+            GameState.Entities.Set(id, updated);
         }
     }
 }

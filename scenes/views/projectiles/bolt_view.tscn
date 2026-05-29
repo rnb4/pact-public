@@ -6,5 +6,7 @@
 [node name="BoltView" unique_id=1621879363 instance=ExtResource("1_j8jmo")]
 
 [node name="AnimatedSprite2D" parent="." index="0" unique_id=1320217703]
+unique_name_in_owner = true
 modulate = Color(0.7647059, 0.24313726, 0.10980392, 1)
+scale = Vector2(0.5, 0.5)
 sprite_frames = ExtResource("2_4eahn")

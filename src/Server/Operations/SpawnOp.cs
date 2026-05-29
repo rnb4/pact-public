@@ -1,8 +1,6 @@
 using Godot;
 using Pact.Models;
-using Pact.Server.Repos;
 using Pact.Shared.Snapshot;
-using Pact.Shared.State.Entities;
 
 namespace Pact.Server.Operations;
 
@@ -12,24 +10,26 @@ public static class SpawnOp
     {
         if (!Runtime.Instance.ModelRepo.TryGet<HeroModel>(modelId, out var model)) return null;
         var hero = model.ToState();
-        hero.ModelId = model.Id;
+        hero.ModelId = model.ModelId;
         hero.Position = position;
-        var id = Runtime.Instance.GameState.Heroes.Allocate(hero);
+        var id = Runtime.Instance.GameState.Entities.Allocate(hero);
         hero.EntityId = id;
-        Runtime.Instance.GameState.Heroes.Set(id, hero);
+        Runtime.Instance.GameState.Entities.Set(id, hero);
         Runtime.Instance.PlayerRepo.Register(peerId, hero.EntityId);
         return id;
     }
 
-    public static EntityId? SpawnProjectile(string modelId, Vector2 position)
+    public static EntityId? SpawnProjectile(string modelId, Vector2 position, EntityId targetId)
     {
+        
         if (!Runtime.Instance.ModelRepo.TryGet<ProjectileModel>(modelId, out var model)) return null;
         var projectile = model.ToState();
         projectile.Position = position;
         projectile.ModelId = modelId;
-        var id = Runtime.Instance.GameState.Projectiles.Allocate(projectile);
+        projectile.TargetId = targetId;
+        var id = Runtime.Instance.GameState.Entities.Allocate(projectile);
         projectile.EntityId = id;
-        Runtime.Instance.GameState.Projectiles.Set(id, projectile);
+        Runtime.Instance.GameState.Entities.Set(id, projectile);
         return id;
     }
 

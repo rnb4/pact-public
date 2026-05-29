@@ -7,6 +7,7 @@ using Pact.Models;
 using Pact.Models.Effects;
 using Pact.Models.Triggers;
 using Pact.Server.Contexts;
+using Pact.Server.Operations;
 using Pact.Shared.Messages.ServerMessages;
 using Pact.Shared.Snapshot;
 using Pact.Shared.State;
@@ -63,7 +64,6 @@ public static class AbilityDomain
         {
             if (triggerModel is not ActivateTriggerModel { AnimationName: not null } activate) continue;
             var message = new BeginCastServerMessage { CasterId = casterId, AnimationName = activate.AnimationName, Facing = facing };
-            GD.Print($"message");
             foreach (var peer in runtime.Multiplayer.GetPeers())
                 NetworkManager.Instance.SendServerMessage(peer, message);
         }
@@ -77,18 +77,26 @@ public static class AbilityDomain
     {
         Casts.RemoveAll(c => c.CasterId == casterId && c.Slot == slot);
     }
-    
-    public static void ApplyTrigger(ActivateTriggerModel trigger, ref HeroState target)
+
+    public static void ApplyTrigger(ActivateTriggerModel trigger, EntityId casterId, ref HeroState target)
     {
-        if (trigger.Effect is DamageEffect dmg)
+        switch (trigger.Effect)
         {
-            target.Health = System.Math.Max(0, target.Health - dmg.Amount);
-            GD.Print($"{target.Name} took {dmg.Amount} damage");
-            Runtime.Instance.GameState.Heroes.Set(target.EntityId, target);
+            case DamageEffect dmg:
+                target.Health = System.Math.Max(0, target.Health - dmg.Amount);
+                GD.Print($"{target.Name} took {dmg.Amount} damage");
+                Runtime.Instance.GameState.Entities.Set(target.EntityId, target);
+                break;
+            case SpawnEffect spawn:
+            {
+                if (!Runtime.Instance.GameState.Entities.TryGet(casterId, out var caster)) return;
+                SpawnOp.SpawnProjectile(spawn.Projectile.ModelId, caster.Position, target.EntityId);
+                break;
+            }
         }
     }
 
-    public static void ApplyTrigger(ActivateTriggerModel trigger, Vector2 position)
+    public static void ApplyTrigger(ActivateTriggerModel trigger, EntityId casterId, Vector2 position)
     {
     }
 }

@@ -5,7 +5,7 @@ using Pact.Shared.State.Entities;
 namespace Pact.Models;
 
 [GlobalClass]
-public partial class ProjectileModel : Model, IToState<HomingProjectileState>
+public partial class ProjectileModel : Model, IToState<HomingProjectileState>, IHasView
 {
     [Export] public PackedScene? ViewScene { get; set; }
     [Export] public float Speed { get; set; }

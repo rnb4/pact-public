@@ -3,6 +3,7 @@ using Godot;
 using MemoryPack;
 using Pact.Models;
 using Pact.Shared.Snapshot;
+using Pact.Shared.State.Entities;
 using ClientRoot = Pact.Client.ClientRoot;
 
 namespace Pact.Shared.Messages.ServerMessages;

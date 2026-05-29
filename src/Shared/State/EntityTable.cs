@@ -1,29 +1,43 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Pact.Shared.Snapshot;
 
-namespace Pact.Shared.Snapshot;
+namespace Pact.Shared.State;
 
-public partial class EntityTable<T> where T : struct
+public class EntityTable<T>
 {
     private T[] _slots = new T[64];
     private byte[] _generation = new byte[64];
-    private readonly Stack<uint> _free = [];
+    private readonly HashSet<uint> _free = [];
     private uint _count;
 
     public EntityId Allocate(T initial)
     {
-        if (_free.TryPop(out var idx))
+        if (_free.Count > 0)
         {
+            var idx = _free.First();
+            _free.Remove(idx);
             _slots[idx] = initial;
+            return EntityId.New(idx, _generation[idx]);
         }
         else
         {
-            idx = _count++;
+            var idx = _count++;
             EnsureCapacity(idx);
             _slots[idx] = initial;
             _generation[idx] = 1;
+            return EntityId.New(idx, _generation[idx]);
         }
-        return EntityId.New(idx, _generation[idx]);
+    }
+
+    public void Sync(EntityId id, T value)
+    {
+        EnsureCapacity(id.Index);
+        if (id.Index >= _count) _count = id.Index + 1;
+        _generation[id.Index] = (byte)id.Generation;
+        _slots[id.Index] = value;
+        _free.Remove(id.Index);
     }
 
     public bool TryGet(EntityId id, out T value)
@@ -52,7 +66,7 @@ public partial class EntityTable<T> where T : struct
     {
         if (!IsAlive(id)) return;
         _generation[id.Index]++;
-        _free.Push(id.Index);
+        _free.Add(id.Index);
     }
     
     public bool IsAlive(EntityId id) => id.Index < _count && _generation[id.Index] == id.Generation;

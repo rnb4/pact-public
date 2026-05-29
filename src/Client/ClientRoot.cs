@@ -12,6 +12,7 @@ using Pact.Shared.Messages.ServerMessages;
 using Pact.Shared.ServerMessages;
 using Pact.Shared.Snapshot;
 using Pact.Shared.State;
+using Pact.Shared.State.Entities;
 
 namespace Pact.Client;
 
@@ -21,22 +22,23 @@ public partial class ClientRoot : Node2D
     public static ClientRoot Instance { get; private set; } = null!;
     private static NetworkManager NetworkManager => NetworkManager.Instance;
     
-    public readonly ClientGameState GameState = new();
+    public readonly GameState GameState = new();
     private readonly ModelRepo _models = ModelRepo.Build();
     
     private readonly Dictionary<EntityId, View> _views = [];
-    private readonly HashSet<EntityId> _knownIds = [];
+    private readonly HashSet<EntityId> _knownHeroes = [];
+    private readonly HashSet<EntityId> _knownProjectiles = [];
     
     private Node2D _viewsContainer = null!;
     private InputManager _input = null!;
-    private Systems.MobaCamera _camera = null!;
+    private MobaCamera _camera = null!;
     
 
     private readonly Dictionary<Type, IMessageHandler> _handlers = new()
     {
         [typeof(AnnouncementServerMessage)] = new AnnouncementHandler(),
         [typeof(BeginCastServerMessage)] = new BeginCastHandler(),
-        [typeof(CastServerMessage)] = new CastCancelHandler(),
+        [typeof(CastCancelServerMessage)] = new CastCancelHandler(),
         [typeof(NotifyLocalIdMessage)] = new NotifyLocalIdHandler(),
         [typeof(SpawnMessage)] = new SpawnHandler(),
     };
@@ -55,7 +57,7 @@ public partial class ClientRoot : Node2D
         _viewsContainer.YSortEnabled = true;
         AddChild(_viewsContainer);
         
-        _camera = GetNode<Systems.MobaCamera>("%MobaCamera");
+        _camera = GetNode<MobaCamera>("%MobaCamera");
         
         NetworkManager.SnapshotReceived += ApplySnapshot;
         NetworkManager.ServerMessageReceived += ApplyServerMessage;
@@ -63,24 +65,37 @@ public partial class ClientRoot : Node2D
 
     public void ApplySnapshot(GameStateSnapshot snapshot)
     {
-        var incoming = new HashSet<EntityId>();
-
-        foreach (var heroState in snapshot.Heroes)
-        {
-            incoming.Add(heroState.EntityId);
-            GameState.Heroes[heroState.EntityId] = heroState;
-            if (!_knownIds.Contains(heroState.EntityId))
-                SpawnView<HeroModel>(heroState.EntityId, heroState.ModelId);
-        }
-
-        foreach (var id in _knownIds)
-            if (!incoming.Contains(id))
-                GameState.Heroes.Remove(id);
-
-        _knownIds.Clear();
-        _knownIds.UnionWith(incoming);
+        ApplyEntityGroup<HeroState, HeroModel>(snapshot.Heroes,  _knownHeroes);
+        ApplyEntityGroup<HomingProjectileState, ProjectileModel>(snapshot.Projectiles, _knownProjectiles);
     }
-    
+
+    private void ApplyEntityGroup<TState, TModel>(
+        IEnumerable<TState> incoming,
+        HashSet<EntityId> known)
+        where TState : Entity
+        where TModel : Model, IHasView
+    {
+        var incomingIds = new HashSet<EntityId>();
+
+        foreach (var state in incoming)
+        {
+            incomingIds.Add(state.EntityId);
+            GameState.Entities.Sync(state.EntityId, state);
+            if (!known.Contains(state.EntityId))
+                SpawnView<TModel>(state.EntityId, state.ModelId);
+        }
+        
+        foreach ( var id in known)
+            if (!incomingIds.Contains(id))
+            {
+                DespawnView(id);
+                GameState.Entities.Free(id);
+            }
+        
+        known.Clear();
+        known.UnionWith(incomingIds);
+    }
+
     public void SpawnView<T>(EntityId id, string modelId) where T : Model, IHasView
     {
         _models.TryGet<T>(modelId, out var model);

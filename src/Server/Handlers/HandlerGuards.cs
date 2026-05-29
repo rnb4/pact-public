@@ -15,10 +15,12 @@ public static class HandlerGuards
 {
     public static Result ValidateRequester(IHeroRequest request, out HeroState caster)
     {
-        caster = default;
+        caster = null!;
         if (!Runtime.Instance.PlayerRepo.Owns(request.PeerId, request.EntityId)) return Result.Unauthorized;
-        if (!Runtime.Instance.GameState.Heroes.TryGet(request.EntityId, out caster)) return Result.HeroNotFound;
-        if (!caster.IsAlive()) return Result.IsDead;
+        if (!Runtime.Instance.GameState.Entities.TryGet(request.EntityId, out var entity)) return Result.HeroNotFound;
+        if (entity is not HeroState casterEntity) return Result.InvalidTarget;
+        if (!casterEntity.IsAlive()) return Result.IsDead;
+        caster = casterEntity;
         return Result.Ok;
     }
 
@@ -28,9 +30,10 @@ public static class HandlerGuards
         
         if (request.TargetEntityId is { } targetId)
         {
-            if (!Runtime.Instance.GameState.Heroes.TryGet(targetId, out var entity)) return Result.HeroNotFound;
-            if (!entity.IsAlive()) return Result.IsDead;
-            target = new EntityTarget(entity);
+            if (!Runtime.Instance.GameState.Entities.TryGet(targetId, out var entity)) return Result.HeroNotFound;
+            if (entity is not HeroState heroEntity) return Result.InvalidTarget;
+            if (!heroEntity.IsAlive()) return Result.IsDead;
+            target = new EntityTarget(heroEntity);
             return Result.Ok;
         }
 

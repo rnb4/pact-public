@@ -9,24 +9,24 @@ namespace Pact.Server.Repos;
 
 public class ModelRepo
 {
-    private static readonly Dictionary<string, HeroModel> Heroes = [];
-    private static readonly Dictionary<string, ProjectileModel> Projectiles = [];
-    private static readonly Dictionary<string, StatusModel> Statuses = [];
-    private static readonly Dictionary<Type, object> Lookup = new()
-    {
-        [typeof(HeroModel)] = Heroes,
-        [typeof(ProjectileModel)] = Projectiles,
-        [typeof(StatusModel)] = Statuses,
-    };
+    private readonly Dictionary<string, HeroModel> _heroes = [];
+    private readonly Dictionary<string, ProjectileModel> _projectiles = [];
+    private readonly Dictionary<string, StatusModel> _statuses = [];
+    private readonly Dictionary<Type, object> _lookup;
 
-    private void Register<T>(T model, Dictionary<string, T> registry) where T: Model
+    private ModelRepo()
     {
-        registry[model.Id] = model;
+        _lookup = new()
+        {
+            [typeof(HeroModel)] = _heroes,
+            [typeof(ProjectileModel)] = _projectiles,
+            [typeof(StatusModel)] = _statuses,
+        };
     }
 
     public bool TryGet<T>(string id, out T model) where T : Model
     {
-        if (Lookup.TryGetValue(typeof(T), out var dict))
+        if (_lookup.TryGetValue(typeof(T), out var dict))
             return ((Dictionary<string, T>)dict).TryGetValue(id, out model!);
         model = null!;
         return false;
@@ -34,17 +34,24 @@ public class ModelRepo
     
     public static ModelRepo Build()
     {
-        var registry = new ModelRepo();
-        const string heroesPath = "res://resources/heroes/";
-        foreach (var file in DirAccess.GetFilesAt(heroesPath))
-            if ((file.EndsWith(".tres") || file.EndsWith(".res")) && GD.Load(heroesPath + file) is HeroModel model)
-                registry.Register(model, Heroes);
-        const string projectilesPath = "res://resources/projectiles/";
-        foreach (var file in DirAccess.GetFilesAt(projectilesPath))
-            if ((file.EndsWith(".tres") || file.EndsWith(".res")) && GD.Load(projectilesPath + file) is ProjectileModel model)
-                registry.Register(model, Projectiles);
-        return registry;
+        var repo = new ModelRepo();
+        repo.RegisterFolder("res://resources/heroes/", repo._heroes);
+        repo.RegisterFolder("res://resources/projectiles/", repo._projectiles);
+        return repo;
     }
 
-    public void Bind(Runtime runtime) { }
+    private void RegisterFolder<T>(string path, Dictionary<string, T> registry) where T: Model
+    {
+        foreach (var file in DirAccess.GetFilesAt(path))
+            if ((file.EndsWith(".tres") || file.EndsWith(".res")) && GD.Load(path + file) is T model)
+            {
+                model.ModelId = file.ToLower().Replace(".tres", "").Replace(".res", "");
+                Register(model, registry);
+            }
+    }
+
+    private void Register<T>(T model, Dictionary<string, T> registry) where T: Model
+    {
+        registry[model.ModelId] = model;
+    }
 }

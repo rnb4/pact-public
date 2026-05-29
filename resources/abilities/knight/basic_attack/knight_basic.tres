@@ -23,5 +23,4 @@ PostCancelFrame = 12
 Range = 1.0
 TargetType = 1
 Triggers = [SubResource("Resource_angd1")]
-Id = &"knight_basic"
 metadata/_custom_type_script = "uid://b0f1i0j7osqsk"

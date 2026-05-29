@@ -1,4 +1,5 @@
 using MemoryPack;
+using Pact.Shared.State.Entities;
 
 namespace Pact.Shared.State;
 
@@ -6,6 +7,6 @@ namespace Pact.Shared.State;
 public partial struct GameStateSnapshot
 {
     public uint Tick;
-    public Entities.HeroState[] Heroes;
-    public Entities.HomingProjectileState[] Projectiles;
+    public HeroState[] Heroes;
+    public HomingProjectileState[] Projectiles;
 }

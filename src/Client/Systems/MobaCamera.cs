@@ -25,7 +25,7 @@ public partial class MobaCamera : Camera2D
             if (Input.IsActionJustReleased("camera_center")) _lock = false;
             if (_lock || Input.IsActionPressed("camera_center"))
             {
-                if (ClientRoot.Instance.GameState.Heroes.TryGetValue(localId, out var hero))
+                if (ClientRoot.Instance.GameState.Entities.TryGet(localId, out var hero))
                 {
                     Position = hero.Position;
                     return;

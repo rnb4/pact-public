@@ -1,14 +1,10 @@
 using MemoryPack;
 using Pact.Shared.Messages.Results;
 
-namespace Pact.Shared.ServerMessages;
+namespace Pact.Shared.Messages.ServerMessages;
 
 [MemoryPackable]
-public partial class RejectionMessage(RejectReason reason) : Messages.ServerMessages.IServerMessage
+public partial class RejectionMessage(RejectReason reason) : IServerMessage
 {
-    public RejectReason Reason = reason;
-    
-    public void Handle()
-    {
-    }
+    public readonly RejectReason Reason = reason;
 }
