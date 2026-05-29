@@ -1,13 +1,14 @@
+using System;
 using Godot;
 using MemoryPack;
-using Pact.Client.Systems;
+using Pact.Models;
 using Pact.Shared.Snapshot;
 using ClientRoot = Pact.Client.ClientRoot;
 
-namespace Pact.Shared.ServerMessages;
+namespace Pact.Shared.Messages.ServerMessages;
 
 [MemoryPackable]
-public partial class SpawnMessage : Messages.ServerMessages.IServerMessage
+public partial class SpawnMessage : IServerMessage
 {
     public EntityType EntityType { get; set; }
     public EntityId SpawnedEntityId { get; set; }
@@ -16,7 +17,13 @@ public partial class SpawnMessage : Messages.ServerMessages.IServerMessage
 
     public void Handle()
     {
-        GD.Print($"{ModelId}");
-        ClientRoot.Instance.SpawnView(EntityType, SpawnedEntityId, ModelId);
+        switch (EntityType)
+        {
+            case EntityType.Hero:
+                ClientRoot.Instance.SpawnView<HeroModel>(SpawnedEntityId, ModelId);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 }

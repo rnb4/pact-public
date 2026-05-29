@@ -1,13 +1,14 @@
 [gd_scene format=3 uid="uid://dn5ukbuosdu0a"]
 
 [ext_resource type="Script" uid="uid://b75bs232poxdr" path="res://src/Client/ClientRoot.cs" id="1_g724g"]
-[ext_resource type="Script" uid="uid://cy2xoyukq1186" path="res://src/Client/MobaCamera.cs" id="2_1wvkc"]
+[ext_resource type="Script" uid="uid://j2bikw015p4u" path="res://src/Client/Systems/MobaCamera.cs" id="2_1wvkc"]
 
 [node name="ClientRoot" type="Node2D" unique_id=1077773417]
 script = ExtResource("1_g724g")
 
-[node name="MobaCamera" type="Camera2D" parent="." unique_id=291492496]
+[node name="MobaCamera" type="Camera2D" parent="." unique_id=241281035]
 unique_name_in_owner = true
+position = Vector2(960, 540)
 position_smoothing_enabled = true
 script = ExtResource("2_1wvkc")
-metadata/_custom_type_script = "uid://cy2xoyukq1186"
+metadata/_custom_type_script = "uid://j2bikw015p4u"

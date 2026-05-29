@@ -2,12 +2,12 @@ using Godot;
 using Pact.AutoLoad;
 using Pact.Shared.Snapshot;
 
-namespace Pact.Client;
+namespace Pact.Client.Systems;
 
 [GlobalClass]
 public partial class MobaCamera : Camera2D
 {
-    [Export] public float PanSpeed { get; set; } = 600f;
+    [Export] public float PanSpeed { get; set; } = 9.5f.UnitsToPixels();
     [Export] public float EdgeThreshold { get; set; } = 0.1f;
     [Export] public float ZoomMin { get; set; } = 0.5f;
     [Export] public float ZoomMax { get; set; } = 2f;
@@ -25,7 +25,7 @@ public partial class MobaCamera : Camera2D
             if (Input.IsActionJustReleased("camera_center")) _lock = false;
             if (_lock || Input.IsActionPressed("camera_center"))
             {
-                if (ClientRoot.Instance.TryGetHero(localId, out var hero))
+                if (ClientRoot.Instance.GameState.Heroes.TryGetValue(localId, out var hero))
                 {
                     Position = hero.Position;
                     return;

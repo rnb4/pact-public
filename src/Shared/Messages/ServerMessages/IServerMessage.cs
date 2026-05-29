@@ -14,7 +14,4 @@ namespace Pact.Shared.Messages.ServerMessages;
 [MemoryPackUnion(7, typeof(RejectionMessage))]
 [MemoryPackUnion(8, typeof(SpawnMessage))]
 [MemoryPackUnion(9, typeof(CastCancelServerMessage))]
-public partial interface IServerMessage
-{
-    public void Handle();
-}
+public partial interface IServerMessage {}

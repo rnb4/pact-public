@@ -1,12 +1,9 @@
 using MemoryPack;
 
-namespace Pact.Shared.ServerMessages;
+namespace Pact.Shared.Messages.ServerMessages;
 
 [MemoryPackable]
-public partial class AnnouncementServerMessage : Messages.ServerMessages.IServerMessage
+public partial class AnnouncementServerMessage : IServerMessage
 {
-    public void Handle()
-    {
-        throw new System.NotImplementedException();
-    }
+    public required string Content { get; set; }
 }

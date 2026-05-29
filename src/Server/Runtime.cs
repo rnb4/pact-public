@@ -9,6 +9,7 @@ using Pact.Server.Systems;
 using Pact.Shared.Messages.Requests;
 using Pact.Shared.Messages.Results;
 using Pact.Shared.ServerMessages;
+using Pact.Shared.State;
 using AbilityRequest = Pact.Shared.Messages.Requests.AbilityRequest;
 using CursorUpdateRequest = Pact.Shared.Messages.Requests.CursorUpdateRequest;
 using IRequest = Pact.Shared.Messages.Requests.IRequest;
@@ -24,7 +25,7 @@ public class Runtime
     public readonly ConcurrentQueue<IRequest> IncomingRequests = [];
     
     // Repos
-    public readonly StateRepo StateRepo = new();
+    public readonly GameState GameState = new();
     public readonly PlayerRepo PlayerRepo = new();
     public ModelRepo ModelRepo { get; } = ModelRepo.Build();
     
@@ -51,7 +52,7 @@ public class Runtime
         while (IncomingRequests.TryDequeue(out var request))
             Handle(request);
         
-        StateRepo.Tick++;
+        GameState.Tick++;
         foreach (var system in TickOrder) system.Tick(delta);
     }
 

@@ -12,7 +12,7 @@ public class CursorUpdateHandler : IRequestHandler<CursorUpdateRequest>
             return result;
         if (!Mathf.IsZeroApprox(hero.MoveDirection.LengthSquared())) return Result.Ok;
         hero.LookDirection = hero.Position.DirectionTo(request.CursorPosition);
-        Runtime.Instance.StateRepo.Heroes.Set(hero.EntityId, hero);
+        Runtime.Instance.GameState.Heroes.Set(hero.EntityId, hero);
         return Result.Ok;
     }
 }

@@ -1,5 +1,6 @@
 using MemoryPack;
 using Pact.Client;
+using Pact.Client.Views;
 using Pact.Shared.ServerMessages;
 using Pact.Shared.Snapshot;
 
@@ -15,6 +16,7 @@ public partial class BeginCastServerMessage : IServerMessage
     public void Handle()
     {
         if (!ClientRoot.Instance.TryGetView(CasterId, out var view)) return;
-        view.PlayCastAnimation(AnimationName, Facing);
+        if (view is not HeroView heroView) return;
+        heroView.PlayCastAnimation(AnimationName, Facing);
     }
 }

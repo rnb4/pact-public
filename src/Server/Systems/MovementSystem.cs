@@ -10,7 +10,7 @@ public class MovementSystem : ISystem
 
     public void Tick(double delta)
     {
-        foreach (var (id, entity) in Runtime.StateRepo.Heroes.All())
+        foreach (var (id, entity) in Runtime.GameState.Heroes.All())
         {
             if (entity.Path.IsEmpty() || entity.PathIndex >= entity.Path.Length) continue;
             
@@ -34,7 +34,7 @@ public class MovementSystem : ISystem
 
             if (!Mathf.IsZeroApprox(updated.MoveDirection.LengthSquared()))
                 updated.LookDirection = updated.MoveDirection;
-            Runtime.StateRepo.Heroes.Set(id, updated);
+            Runtime.GameState.Heroes.Set(id, updated);
         }
     }
 }

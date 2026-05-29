@@ -15,8 +15,8 @@ namespace Pact.Server.Handlers;
 public class AbilityHandler : IRequestHandler<AbilityRequest>
 {
     private static Runtime Runtime => Runtime.Instance;
-    private static readonly float RangeAdjustment = 2f.PixelsToUnits();
-    private static readonly float RepathThreshold = 0.5f.PixelsToUnits();
+    private static readonly float RangeAdjustment = 2f.UnitsToPixels();
+    private static readonly float RepathThreshold = 0.5f.UnitsToPixels();
     
     public Result Handle(AbilityRequest request)
     {
@@ -36,7 +36,7 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
             _ => throw new UnreachableException(),
         };
 
-        var range = abilityModel.Range.PixelsToUnits();
+        var range = abilityModel.Range.UnitsToPixels();
         var inRange = caster.Position.DistanceTo(targetPos) <= range;
 
         if (inRange)
@@ -45,7 +45,7 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
             {
                 caster.LookDirection = caster.Position.DirectionTo(targetPos);
                 PathfinderOp.Stop(ref caster);
-                Runtime.StateRepo.Heroes.Set(request.EntityId, caster);
+                Runtime.GameState.Heroes.Set(request.EntityId, caster);
                 AbilityDomain.Cast(request.EntityId, request.Slot, target, abilityModel, Runtime, caster.LookDirection.ToFacingDirection());
 
                 if (request.Slot == AbilitySlot.Basic)
@@ -74,13 +74,13 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
                         if (needsPath)
                         {
                             PathfinderOp.RequestPath(ref caster, stopPoint);
-                            Runtime.StateRepo.Heroes.Set(request.EntityId, caster);
+                            Runtime.GameState.Heroes.Set(request.EntityId, caster);
                         }
                         break;
                     }
                     case GroundTarget:
                         PathfinderOp.RequestPath(ref caster, stopPoint);
-                        Runtime.StateRepo.Heroes.Set(request.EntityId, caster);
+                        Runtime.GameState.Heroes.Set(request.EntityId, caster);
                         break;
                 }
             }

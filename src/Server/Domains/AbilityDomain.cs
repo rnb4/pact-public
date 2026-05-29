@@ -84,7 +84,7 @@ public static class AbilityDomain
         {
             target.Health = System.Math.Max(0, target.Health - dmg.Amount);
             GD.Print($"{target.Name} took {dmg.Amount} damage");
-            Runtime.Instance.StateRepo.Heroes.Set(target.EntityId, target);
+            Runtime.Instance.GameState.Heroes.Set(target.EntityId, target);
         }
     }
 

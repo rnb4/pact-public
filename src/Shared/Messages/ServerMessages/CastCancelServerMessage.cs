@@ -1,6 +1,5 @@
 using MemoryPack;
 using Pact.Client;
-using Pact.Shared.ServerMessages;
 using Pact.Shared.Snapshot;
 
 namespace Pact.Shared.Messages.ServerMessages;

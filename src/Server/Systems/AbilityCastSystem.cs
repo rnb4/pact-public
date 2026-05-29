@@ -23,7 +23,7 @@ public class AbilityCastSystem : ISystem
             {
                 case EntityTarget { Entity: var entity}:
                 {
-                    if (!Runtime.StateRepo.Heroes.TryGet(entity.EntityId, out var targetEntity) || !targetEntity.IsAlive())
+                    if (!Runtime.GameState.Heroes.TryGet(entity.EntityId, out var targetEntity) || !targetEntity.IsAlive())
                     {
                         casts.RemoveAt(i);
                         continue;

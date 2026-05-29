@@ -25,7 +25,7 @@ public partial class HeroView : View
 
     public override void _Process(double delta)
     {
-        if (!ClientRoot.Instance.TryGetHero(Id, out var entity)) return;
+        if (!ClientRoot.Instance.GameState.Heroes.TryGetValue(Id, out var entity)) return;
 
         SmoothedPosition = SmoothedPosition.Lerp(entity.Position, PositionSmoothing * (float)delta);
         MoveDelta = SmoothedPosition - GlobalPosition;

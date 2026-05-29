@@ -4,7 +4,7 @@ using HeroState = Pact.Shared.State.Entities.HeroState;
 namespace Pact.Models;
 
 [GlobalClass]
-public partial class HeroModel : Model, IToState<HeroState>
+public partial class HeroModel : Model, IHasView, IToState<HeroState>
 {
     
     [Export] public string Name { get; set; } = "Unnamed Hero";
@@ -48,7 +48,8 @@ public partial class HeroModel : Model, IToState<HeroState>
             Health = Health,
             MaxMana = Mana,
             Mana = Mana,
-            Speed = MoveSpeed.PixelsToUnits(),
+            Speed = MoveSpeed.UnitsToPixels(),
         };
     }
+
 }

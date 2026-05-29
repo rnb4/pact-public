@@ -15,8 +15,8 @@ public partial class ProjectileModel : Model, IToState<HomingProjectileState>
 
     public HomingProjectileState ToState() => new()
     {
-        Radius = Radius.PixelsToUnits(),
-        Speed = Speed.PixelsToUnits(),
+        Radius = Radius.UnitsToPixels(),
+        Speed = Speed.UnitsToPixels(),
         TimeRemaining = Lifetime,
     };
 }

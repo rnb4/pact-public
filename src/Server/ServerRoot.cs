@@ -41,8 +41,8 @@ public partial class ServerRoot : Node2D
         foreach (var peer in Multiplayer.GetPeers())
             NetworkManager.Instance.SendSnapshot(peer, new GameStateSnapshot
             {
-                Heroes = _runtime.StateRepo.Heroes.All().Select(e => e.value).ToArray(),
-                Projectiles = _runtime.StateRepo.Projectiles.All().Select(e => e.value).ToArray(),
+                Heroes = _runtime.GameState.Heroes.All().Select(e => e.value).ToArray(),
+                Projectiles = _runtime.GameState.Projectiles.All().Select(e => e.value).ToArray(),
             });
     }
 

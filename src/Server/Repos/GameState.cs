@@ -6,7 +6,7 @@ using HeroState = Pact.Shared.State.Entities.HeroState;
 
 namespace Pact.Server.Repos;
 
-public class StateRepo
+public class GameState
 {
     public uint Tick { get; set; }
     public readonly EntityTable<HeroState> Heroes = new();

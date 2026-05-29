@@ -14,9 +14,9 @@ public static class SpawnOp
         var hero = model.ToState();
         hero.ModelId = model.Id;
         hero.Position = position;
-        var id = Runtime.Instance.StateRepo.Heroes.Allocate(hero);
+        var id = Runtime.Instance.GameState.Heroes.Allocate(hero);
         hero.EntityId = id;
-        Runtime.Instance.StateRepo.Heroes.Set(id, hero);
+        Runtime.Instance.GameState.Heroes.Set(id, hero);
         Runtime.Instance.PlayerRepo.Register(peerId, hero.EntityId);
         return id;
     }
@@ -27,9 +27,9 @@ public static class SpawnOp
         var projectile = model.ToState();
         projectile.Position = position;
         projectile.ModelId = modelId;
-        var id = Runtime.Instance.StateRepo.Projectiles.Allocate(projectile);
+        var id = Runtime.Instance.GameState.Projectiles.Allocate(projectile);
         projectile.EntityId = id;
-        Runtime.Instance.StateRepo.Projectiles.Set(id, projectile);
+        Runtime.Instance.GameState.Projectiles.Set(id, projectile);
         return id;
     }
 

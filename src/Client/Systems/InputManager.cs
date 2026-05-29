@@ -11,18 +11,15 @@ namespace Pact.Client.Systems;
 [GlobalClass]
 public partial class InputManager : Node2D
 {
-    [Export] public Node2D? Cursor { get; set; }
+    private static readonly float HeroPickRadius = 1f.UnitsToPixels();
     
-    public EntityId HoveredEntityId { get; set; }
+    private EntityId HoveredEntityId { get; set; }
     private View? PreviousHoveredEntity { get; set; }
-
-    private static readonly float HeroPickRadius = 1f.PixelsToUnits();
 
     public override void _Process(double delta)
     {
         HoveredEntityId = UpdateHoveredEntity();
-        HighlightHoveredEntity();
-        if (Cursor != null) Cursor.Position = GetGlobalMousePosition();
+        UpdateHighlightedView();
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -73,7 +70,7 @@ public partial class InputManager : Node2D
     {
         var best = EntityId.None;
         var bestDistance = HeroPickRadius;
-        foreach (var hero in ClientRoot.Instance.Heroes)
+        foreach (var hero in ClientRoot.Instance.GameState.Heroes.Values)
         {
             var distance = hero.Position.DistanceTo(GetGlobalMousePosition());
             if (distance < bestDistance)
@@ -85,7 +82,7 @@ public partial class InputManager : Node2D
         return best;
     }
 
-    private void HighlightHoveredEntity()
+    private void UpdateHighlightedView()
     {
         ClientRoot.Instance.TryGetView(HoveredEntityId, out var view);
         if (view == PreviousHoveredEntity) return;
