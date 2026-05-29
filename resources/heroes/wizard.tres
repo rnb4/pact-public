@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="HeroModel" format=3 uid="uid://bnbrwthy3ad1k"]
+
+[ext_resource type="PackedScene" uid="uid://uj8i3y3vt70p" path="res://scenes/views/wizard_view.tscn" id="1_2287h"]
+[ext_resource type="Resource" uid="uid://dikvj5n3ub36l" path="res://resources/abilities/wizard/wizard_basic.tres" id="1_yu340"]
+[ext_resource type="Script" uid="uid://wh8k0hm5nybe" path="res://src/Models/HeroModel.cs" id="2_yu340"]
+
+[resource]
+script = ExtResource("2_yu340")
+Name = "Wizard"
+ViewScene = ExtResource("1_2287h")
+BasicAttack = ExtResource("1_yu340")
+MoveSpeed = 5.0
+Id = &"wizard"
+metadata/_custom_type_script = "uid://wh8k0hm5nybe"

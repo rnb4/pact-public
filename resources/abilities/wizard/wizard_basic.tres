@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="BasicAbilityModel" format=3 uid="uid://dikvj5n3ub36l"]
+
+[ext_resource type="Script" uid="uid://b0f1i0j7osqsk" path="res://src/Models/BasicAbilityModel.cs" id="1_2adr5"]
+[ext_resource type="Script" uid="uid://bj2joluftf8do" path="res://src/Models/ProjectileModel.cs" id="1_6jctn"]
+[ext_resource type="Script" uid="uid://c1yw4uku4foxy" path="res://src/Models/Triggers/ActivateTriggerModel.cs" id="2_6jctn"]
+[ext_resource type="Script" uid="uid://1fu1rwafb7oo" path="res://src/Models/Effects/SpawnEffect.cs" id="2_wkrcs"]
+
+[sub_resource type="Resource" id="Resource_eh6kx"]
+script = ExtResource("1_6jctn")
+Speed = 3.6
+TurnRate = 1.0
+Lifetime = 99.0
+metadata/_custom_type_script = "uid://bj2joluftf8do"
+
+[sub_resource type="Resource" id="Resource_4ebgp"]
+script = ExtResource("2_wkrcs")
+Projectile = SubResource("Resource_eh6kx")
+metadata/_custom_type_script = "uid://1fu1rwafb7oo"
+
+[sub_resource type="Resource" id="Resource_gq05b"]
+script = ExtResource("2_6jctn")
+AnimationName = "attack_1"
+FireFrame = 7
+Effect = SubResource("Resource_4ebgp")
+metadata/_custom_type_script = "uid://c1yw4uku4foxy"
+
+[resource]
+script = ExtResource("1_2adr5")
+PreCancelFrame = 7
+PostCancelFrame = 12
+TargetType = 1
+Triggers = [SubResource("Resource_gq05b")]
+Id = &"wizard_basic"
+metadata/_custom_type_script = "uid://b0f1i0j7osqsk"

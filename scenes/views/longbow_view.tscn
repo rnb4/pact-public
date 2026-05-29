@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://ct4kkoake2haa"]
+
+[ext_resource type="PackedScene" uid="uid://s5ljb5jwf0aj" path="res://scenes/views/hero_view.tscn" id="1_1eqlk"]
+[ext_resource type="SpriteFrames" uid="uid://vx04c2ytml8t" path="res://assets/sprite_frames/heroes/Longbow_frames.tres" id="2_03wpx"]
+
+[node name="LongbowView" unique_id=625931354 instance=ExtResource("1_1eqlk")]
+
+[node name="AnimatedSprite2D" parent="." index="0" unique_id=1006249178]
+sprite_frames = ExtResource("2_03wpx")
+animation = &"idle_s"
+autoplay = "idle_s"

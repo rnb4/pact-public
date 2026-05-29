@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://cgwpifdyixv2w"]
+
+[ext_resource type="PackedScene" uid="uid://s5ljb5jwf0aj" path="res://scenes/views/hero_view.tscn" id="1_u6ml4"]
+[ext_resource type="SpriteFrames" uid="uid://sldn5eln1fj0" path="res://assets/sprite_frames/heroes/knight_frames.tres" id="1_vc61a"]
+
+[node name="KnightView" unique_id=625931354 instance=ExtResource("1_u6ml4")]
+
+[node name="AnimatedSprite2D" parent="." index="0" unique_id=1006249178]
+sprite_frames = ExtResource("1_vc61a")
+animation = &"idle_sw"
+autoplay = "idle_s"

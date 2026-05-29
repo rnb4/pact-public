@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://umxs4ragyqu3"]
+
+[ext_resource type="Script" uid="uid://b1tiwfs33vgmn" path="res://src/Client/Views/ProjectileView.cs" id="1_vqnkg"]
+
+[node name="ProjectileView" type="Node2D" unique_id=1621879363]
+script = ExtResource("1_vqnkg")
+metadata/_custom_type_script = "uid://b1tiwfs33vgmn"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1320217703]

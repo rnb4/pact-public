@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://uj8i3y3vt70p"]
+
+[ext_resource type="PackedScene" uid="uid://s5ljb5jwf0aj" path="res://scenes/views/hero_view.tscn" id="1_l6shf"]
+[ext_resource type="SpriteFrames" uid="uid://cvhdx5nct0lw1" path="res://assets/sprite_frames/heroes/wizard_frames.tres" id="2_xr1nl"]
+
+[node name="WizardView" unique_id=625931354 instance=ExtResource("1_l6shf")]
+
+[node name="AnimatedSprite2D" parent="." index="0" unique_id=1006249178]
+sprite_frames = ExtResource("2_xr1nl")
+animation = &"attack_1_e"
+autoplay = "idle_s"
+frame = 14
+frame_progress = 1.0

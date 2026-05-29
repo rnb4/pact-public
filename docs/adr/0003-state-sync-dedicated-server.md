@@ -1,0 +1,3 @@
+# State Sync with Dedicated Server over Lockstep
+
+The server runs all simulation authoritatively and broadcasts state to clients. Clients render what they receive and send only inputs. We chose this over lockstep/deterministic simulation because Godot's physics engine and C# floats are not guaranteed to produce identical results across platforms — one non-deterministic call anywhere in the simulation would cause lockstep desync with no recovery path. State sync tolerates divergence: a client that falls behind re-syncs from the next state update. Rollback netcode was also considered but is prohibitively expensive for the number of entities a MOBA simulates simultaneously.

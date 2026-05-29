@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://mnl60jysu33n"]
+
+[ext_resource type="Script" uid="uid://bp2yaqjqohao4" path="res://src/Server/ServerRoot.cs" id="1_v7sgl"]
+
+[node name="ServerRoot" type="Node2D" unique_id=528588651]
+script = ExtResource("1_v7sgl")
+metadata/_custom_type_script = "uid://bp2yaqjqohao4"

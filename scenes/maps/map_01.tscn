@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://tv3715ixjof4"]
+
+[ext_resource type="PackedScene" uid="uid://0v18mrmv6dvn" path="res://assets/maps/map_01.tmx" id="1_hsmnc"]
+[ext_resource type="Script" uid="uid://b2iv3wcxiwcng" path="res://src/Shared/Scenes/Map.cs" id="2_g5h58"]
+[ext_resource type="NavigationPolygon" uid="uid://bkr5ltxixus4l" path="res://resources/navigation/map_01_navigation_polygon.tres" id="3_g5h58"]
+
+[node name="map_01" unique_id=28538254 instance=ExtResource("1_hsmnc")]
+script = ExtResource("2_g5h58")
+
+[node name="NavigationRegion (NR)" parent="Navigation" parent_id_path=PackedInt32Array(1043225595) index="0" unique_id=204071727]
+unique_name_in_owner = true
+navigation_polygon = ExtResource("3_g5h58")
+
+[node name="RedSpawns" type="Node2D" parent="." index="1" unique_id=1052012534]
+unique_name_in_owner = true
+
+[node name="Marker2D" type="Marker2D" parent="RedSpawns" index="0" unique_id=1232908235]
+position = Vector2(1162, 538)
+
+[node name="BlueSpawns" type="Node2D" parent="." index="2" unique_id=377198371]
+unique_name_in_owner = true
+
+[node name="Marker2D" type="Marker2D" parent="BlueSpawns" index="0" unique_id=337458166]
+position = Vector2(1162, 538)

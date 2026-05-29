@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="HeroModel" format=3 uid="uid://dtm4o0karo84u"]
+
+[ext_resource type="Script" uid="uid://wh8k0hm5nybe" path="res://src/Models/HeroModel.cs" id="1_1744r"]
+[ext_resource type="PackedScene" uid="uid://cgwpifdyixv2w" path="res://scenes/views/knight_view.tscn" id="1_euxo7"]
+[ext_resource type="Resource" uid="uid://ctj4ng7h8p13h" path="res://resources/abilities/knight/basic_attack/knight_basic.tres" id="1_lhva3"]
+
+[resource]
+script = ExtResource("1_1744r")
+Name = "Knight"
+ViewScene = ExtResource("1_euxo7")
+BasicAttack = ExtResource("1_lhva3")
+MoveSpeed = 3.25
+Id = &"knight"
+metadata/_custom_type_script = "uid://wh8k0hm5nybe"
