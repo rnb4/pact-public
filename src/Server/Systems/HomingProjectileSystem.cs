@@ -11,7 +11,7 @@ namespace Pact.Server.Systems;
 
 public class HomingProjectileSystem : ISystem
 {
-    private static EntityTable<Entity> Entities => Runtime.Instance.GameState.Entities;
+    private static EntityTable<Entity> Entities => Game.Instance.State.Entities;
     
     public void Tick(double delta)
     {

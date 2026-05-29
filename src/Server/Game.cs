@@ -16,18 +16,18 @@ using Pact.Shared.State;
 
 namespace Pact.Server;
 
-public class Runtime
+public class Game
 {
-    public static Runtime Instance { get; private set; } = null!;
+    public static Game Instance { get; private set; } = null!;
     public required Map Map { get; init; }
     public required Rid NavMap { get; init; }
     public required MultiplayerApi Multiplayer { get; init; }
     public readonly ConcurrentQueue<IRequest> IncomingRequests = [];
     
     // Repos
-    public readonly GameState GameState = new();
-    public readonly PlayerRepo PlayerRepo = new();
-    public ModelRepo ModelRepo { get; } = ModelRepo.Build();
+    public readonly GameState State = new();
+    public ModelRepo Models { get; } = ModelRepo.Build();
+    public readonly PlayerRepo Players = new();
     
     public required IReadOnlyList<ISystem> TickOrder { get; init; }
     
@@ -37,14 +37,14 @@ public class Runtime
     private readonly CursorUpdateHandler _cursorUpdateHandler = new();
 
 
-    private Runtime()
+    private Game()
     {
         Instance = this;
     }
     
-    public static Runtime Build(Map map, MultiplayerApi multiplayer)
+    public static Game Build(Map map, MultiplayerApi multiplayer)
     {
-        return new Runtime
+        return new Game
         {
             Map = map,
             TickOrder = [
@@ -64,14 +64,14 @@ public class Runtime
         while (IncomingRequests.TryDequeue(out var request))
             Handle(request);
         
-        GameState.Tick++;
+        State.Tick++;
         foreach (var system in TickOrder) system.Tick(delta);
         
         foreach (var peer in Multiplayer.GetPeers())
             NetworkManager.Instance.SendSnapshot(peer, new GameStateSnapshot
             {
-                Heroes = GameState.Heroes().Select(e => e.Item2).ToArray(),
-                Projectiles = GameState.HomingProjectiles().Select(e => e.Item2).ToArray(),
+                Heroes = State.Heroes().Select(e => e.Item2).ToArray(),
+                Projectiles = State.HomingProjectiles().Select(e => e.Item2).ToArray(),
             });
     }
     

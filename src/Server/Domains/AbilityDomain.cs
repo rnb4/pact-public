@@ -57,14 +57,14 @@ public static class AbilityDomain
         }
     }
     
-    public static void Cast(EntityId casterId, AbilitySlot slot, Target target, AbilityModel abilityModel, Runtime runtime, FacingDirection facing)
+    public static void Cast(EntityId casterId, AbilitySlot slot, Target target, AbilityModel abilityModel, Game game, FacingDirection facing)
     {
         ScheduleFire(casterId, slot, target, abilityModel);
         foreach (var triggerModel in abilityModel.Triggers)
         {
             if (triggerModel is not ActivateTriggerModel { AnimationName: not null } activate) continue;
             var message = new BeginCastServerMessage { CasterId = casterId, AnimationName = activate.AnimationName, Facing = facing };
-            foreach (var peer in runtime.Multiplayer.GetPeers())
+            foreach (var peer in game.Multiplayer.GetPeers())
                 NetworkManager.Instance.SendServerMessage(peer, message);
         }
     }
@@ -76,28 +76,6 @@ public static class AbilityDomain
     public static void CancelCast(EntityId casterId, AbilitySlot slot)
     {
         Casts.RemoveAll(c => c.CasterId == casterId && c.Slot == slot);
-    }
-
-    public static void ApplyTrigger(ActivateTriggerModel trigger, EntityId casterId, ref HeroState target)
-    {
-        switch (trigger.Effect)
-        {
-            case DamageEffect dmg:
-                target.Health = System.Math.Max(0, target.Health - dmg.Amount);
-                GD.Print($"{target.Name} took {dmg.Amount} damage");
-                Runtime.Instance.GameState.Entities.Set(target.EntityId, target);
-                break;
-            case SpawnEffect spawn:
-            {
-                if (!Runtime.Instance.GameState.Entities.TryGet(casterId, out var caster)) return;
-                SpawnOp.SpawnProjectile(spawn.Projectile.ModelId, caster.Position, target.EntityId);
-                break;
-            }
-        }
-    }
-
-    public static void ApplyTrigger(ActivateTriggerModel trigger, EntityId casterId, Vector2 position)
-    {
     }
 }
 

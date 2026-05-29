@@ -16,8 +16,8 @@ public static class HandlerGuards
     public static Result ValidateRequester(IHeroRequest request, out HeroState caster)
     {
         caster = null!;
-        if (!Runtime.Instance.PlayerRepo.Owns(request.PeerId, request.EntityId)) return Result.Unauthorized;
-        if (!Runtime.Instance.GameState.Entities.TryGet(request.EntityId, out var entity)) return Result.HeroNotFound;
+        if (!Game.Instance.Players.Owns(request.PeerId, request.EntityId)) return Result.Unauthorized;
+        if (!Game.Instance.State.Entities.TryGet(request.EntityId, out var entity)) return Result.HeroNotFound;
         if (entity is not HeroState casterEntity) return Result.InvalidTarget;
         if (!casterEntity.IsAlive()) return Result.IsDead;
         caster = casterEntity;
@@ -30,7 +30,7 @@ public static class HandlerGuards
         
         if (request.TargetEntityId is { } targetId)
         {
-            if (!Runtime.Instance.GameState.Entities.TryGet(targetId, out var entity)) return Result.HeroNotFound;
+            if (!Game.Instance.State.Entities.TryGet(targetId, out var entity)) return Result.HeroNotFound;
             if (entity is not HeroState heroEntity) return Result.InvalidTarget;
             if (!heroEntity.IsAlive()) return Result.IsDead;
             target = new EntityTarget(heroEntity);
@@ -49,7 +49,7 @@ public static class HandlerGuards
     public static Result ValidateHeroModel(string id, out HeroModel model)
     {
         model = null!;
-        if (!Runtime.Instance.ModelRepo.TryGet(id, out model)) return Result.HeroNotFound;
+        if (!Game.Instance.Models.TryGet(id, out model)) return Result.HeroNotFound;
         return Result.Ok;
     }
 

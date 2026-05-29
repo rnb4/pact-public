@@ -3,10 +3,23 @@
 [ext_resource type="PackedScene" uid="uid://umxs4ragyqu3" path="res://scenes/views/projectiles/projectile_view.tscn" id="1_j8jmo"]
 [ext_resource type="SpriteFrames" uid="uid://dbj5jsuppjrj5" path="res://assets/sprite_frames/effects/bolt_frames.tres" id="2_4eahn"]
 
+[sub_resource type="Gradient" id="Gradient_j8jmo"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_4eahn"]
+gradient = SubResource("Gradient_j8jmo")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
 [node name="BoltView" unique_id=1621879363 instance=ExtResource("1_j8jmo")]
 
 [node name="AnimatedSprite2D" parent="." index="0" unique_id=1320217703]
 unique_name_in_owner = true
-modulate = Color(0.7647059, 0.24313726, 0.10980392, 1)
+modulate = Color(0.8174897, 0.49243826, 0.14967942, 1)
 scale = Vector2(0.5, 0.5)
 sprite_frames = ExtResource("2_4eahn")
+
+[node name="PointLight2D" type="PointLight2D" parent="." index="1" unique_id=1908366344]
+color = Color(0.9380285, 0.46970868, 1.92523e-07, 1)
+texture = SubResource("GradientTexture2D_4eahn")

@@ -14,7 +14,7 @@ namespace Pact.Server.Handlers;
 
 public class AbilityHandler : IRequestHandler<AbilityRequest>
 {
-    private static Runtime Runtime => Runtime.Instance;
+    private static Game Game => Game.Instance;
     private static readonly float RangeAdjustment = 2f.UnitsToPixels();
     private static readonly float RepathThreshold = 0.5f.UnitsToPixels();
     
@@ -45,8 +45,8 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
             {
                 caster.LookDirection = caster.Position.DirectionTo(targetPos);
                 PathfinderOp.Stop(ref caster);
-                Runtime.GameState.Entities.Set(request.EntityId, caster);
-                AbilityDomain.Cast(request.EntityId, request.Slot, target, abilityModel, Runtime, caster.LookDirection.ToFacingDirection());
+                Game.State.Entities.Set(request.EntityId, caster);
+                AbilityDomain.Cast(request.EntityId, request.Slot, target, abilityModel, Game, caster.LookDirection.ToFacingDirection());
 
                 if (request.Slot == AbilitySlot.Basic)
                     ActionDomain.QueuedActions[request.EntityId] = request;
@@ -74,13 +74,13 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
                         if (needsPath)
                         {
                             PathfinderOp.RequestPath(ref caster, stopPoint);
-                            Runtime.GameState.Entities.Set(request.EntityId, caster);
+                            Game.State.Entities.Set(request.EntityId, caster);
                         }
                         break;
                     }
                     case GroundTarget:
                         PathfinderOp.RequestPath(ref caster, stopPoint);
-                        Runtime.GameState.Entities.Set(request.EntityId, caster);
+                        Game.State.Entities.Set(request.EntityId, caster);
                         break;
                 }
             }

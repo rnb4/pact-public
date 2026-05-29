@@ -9,7 +9,7 @@ public static class PathfinderOp
 {
     public static void RequestPath<T>(ref T pathMover, Vector2 destination) where T : Entity, IPathMove
     {
-        var path = NavigationServer2D.MapGetPath(Runtime.Instance.NavMap, pathMover.Position, destination, optimize: true);
+        var path = NavigationServer2D.MapGetPath(Game.Instance.NavMap, pathMover.Position, destination, optimize: true);
         pathMover.Path = path;
         pathMover.PathIndex = 0;
     }

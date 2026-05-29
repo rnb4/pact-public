@@ -6,7 +6,7 @@ namespace Pact.Server.Systems;
 
 public class ActionQueueSystem : ISystem
 {
-    private static Runtime Runtime => Runtime.Instance;
+    private static Game Game => Game.Instance;
 
     public void Tick(double delta)
     {
@@ -17,11 +17,11 @@ public class ActionQueueSystem : ISystem
                 if (AbilityDomain.Casts.Any(c => c.CasterId == id)) continue;
                 if (!ActionDomain.CanMove(id)) continue;
                 ActionDomain.QueuedActions.Remove(id);
-                Runtime.Handle(moveRequest);
+                Game.Handle(moveRequest);
             }
             else
             {
-                Runtime.Handle(request);
+                Game.Handle(request);
             }
         }
     }

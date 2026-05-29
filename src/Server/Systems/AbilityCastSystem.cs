@@ -8,7 +8,7 @@ namespace Pact.Server.Systems;
 
 public class AbilityCastSystem : ISystem
 {
-    private static Runtime Runtime => Runtime.Instance;
+    private static Game Game => Game.Instance;
 
     public void Tick(double delta)
     {
@@ -24,7 +24,7 @@ public class AbilityCastSystem : ISystem
             {
                 case EntityTarget { Entity: var entity}:
                 {
-                    if (!Runtime.GameState.Entities.TryGet(entity.EntityId, out var targetEntity) 
+                    if (!Game.State.Entities.TryGet(entity.EntityId, out var targetEntity) 
                         || targetEntity is not HeroState hero 
                         || !hero.IsAlive())
                     {
@@ -32,12 +32,12 @@ public class AbilityCastSystem : ISystem
                         continue;
                     }
                     AbilityDomain.StartCooldown(cast.CasterId, cast.Slot, cast.AbilityModel.Cooldown);
-                    AbilityDomain.ApplyTrigger(cast.Trigger, cast.CasterId, ref hero);
+                    EffectOp.ApplyTrigger(cast.Trigger, cast.CasterId, ref hero);
                     break;
                 }
                 case GroundTarget { Position: var position}:
                     AbilityDomain.StartCooldown(cast.CasterId, cast.Slot, cast.AbilityModel.Cooldown);
-                    AbilityDomain.ApplyTrigger(cast.Trigger, cast.CasterId, position);
+                    EffectOp.ApplyTrigger(cast.Trigger, cast.CasterId, position);
                     break;
             }
 

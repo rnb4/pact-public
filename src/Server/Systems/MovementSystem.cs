@@ -5,13 +5,13 @@ namespace Pact.Server.Systems;
 
 public class MovementSystem : ISystem
 {
-    private static GameState GameState => Runtime.Instance.GameState;
+    private static GameState State => Game.Instance.State;
     
     // TODO: Add boidslike for avoidance
 
     public void Tick(double delta)
     {
-        foreach (var (id, entity) in GameState.Heroes())
+        foreach (var (id, entity) in State.Heroes())
         {
             if (entity.Path.IsEmpty() || entity.PathIndex >= entity.Path.Length) continue;
             
@@ -35,7 +35,7 @@ public class MovementSystem : ISystem
 
             if (!Mathf.IsZeroApprox(updated.MoveDirection.LengthSquared()))
                 updated.LookDirection = updated.MoveDirection;
-            GameState.Entities.Set(id, updated);
+            State.Entities.Set(id, updated);
         }
     }
 }

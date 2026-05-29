@@ -7,7 +7,7 @@ namespace Pact.Server;
 [GlobalClass]
 public partial class ServerRoot : Node2D
 {
-    private Runtime _runtime = null!;
+    private Game _game = null!;
 
     public override void _Ready()
     {
@@ -16,14 +16,14 @@ public partial class ServerRoot : Node2D
         AddChild(map);
         
         // Build runtime
-        _runtime = Runtime.Build(map, Multiplayer);
+        _game = Game.Build(map, Multiplayer);
 
         // Connect signals
-        NetworkManager.Instance.RequestReceived += _runtime.IncomingRequests.Enqueue;
-        NetworkManager.Instance.RequestUnreliableReceived += _runtime.Handle;
-        Multiplayer.PeerConnected += _runtime.OnPeerConnected;
-        Multiplayer.PeerDisconnected += _runtime.OnPeerDisconnected;
+        NetworkManager.Instance.RequestReceived += _game.IncomingRequests.Enqueue;
+        NetworkManager.Instance.RequestUnreliableReceived += _game.Handle;
+        Multiplayer.PeerConnected += _game.OnPeerConnected;
+        Multiplayer.PeerDisconnected += _game.OnPeerDisconnected;
     }
 
-    public override void _PhysicsProcess(double delta) =>_runtime.Tick(delta);
+    public override void _PhysicsProcess(double delta) =>_game.Tick(delta);
 }
