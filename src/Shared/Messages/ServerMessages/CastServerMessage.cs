@@ -1,12 +1,13 @@
+using System;
 using MemoryPack;
 
-namespace Pact.Shared.ServerMessages;
+namespace Pact.Shared.Messages.ServerMessages;
 
 [MemoryPackable]
-public partial class CastServerMessage : Messages.ServerMessages.IServerMessage
+public partial class CastServerMessage : IServerMessage
 {
     public void Handle()
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 }

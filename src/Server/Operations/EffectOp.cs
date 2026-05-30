@@ -1,9 +1,10 @@
+using System;
 using Godot;
 using Pact.Models;
 using Pact.Models.Effects;
 using Pact.Models.Triggers;
-using Pact.Shared.Snapshot;
 using Pact.Shared.State.Entities;
+using EntityId = Pact.Shared.State.EntityId;
 
 namespace Pact.Server.Operations;
 
@@ -15,7 +16,7 @@ public static class EffectOp
         switch (model.OnHitEffect)
         {
             case DamageEffect dmg:
-                target.Health = System.Math.Max(0, target.Health - dmg.Amount);
+                target.Health = Math.Max(0, target.Health - dmg.Amount);
                 GD.Print($"{target.Name} took {dmg.Amount} damage");
                 Game.Instance.State.Entities.Set(target.EntityId, target);
                 break;
@@ -33,7 +34,7 @@ public static class EffectOp
         switch (trigger.Effect)
         {
             case DamageEffect dmg:
-                target.Health = System.Math.Max(0, target.Health - dmg.Amount);
+                target.Health = Math.Max(0, target.Health - dmg.Amount);
                 GD.Print($"{target.Name} took {dmg.Amount} damage");
                 Game.Instance.State.Entities.Set(target.EntityId, target);
                 break;

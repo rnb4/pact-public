@@ -1,20 +1,19 @@
 using Godot;
 using Pact.AutoLoad;
-using Pact.Shared.Snapshot;
+using EntityId = Pact.Shared.State.EntityId;
 
 namespace Pact.Client.Systems;
 
 [GlobalClass]
 public partial class MobaCamera : Camera2D
 {
+    private bool _lock;
+    private bool _panning;
     [Export] public float PanSpeed { get; set; } = 9.5f.UnitsToPixels();
     [Export] public float EdgeThreshold { get; set; } = 0.1f;
     [Export] public float ZoomMin { get; set; } = 0.5f;
     [Export] public float ZoomMax { get; set; } = 2f;
     [Export] public float ZoomStep { get; set; } = 0.1f;
-
-    private bool _lock;
-    private bool _panning;
 
     public override void _Process(double delta)
     {
@@ -24,13 +23,11 @@ public partial class MobaCamera : Camera2D
             if (Input.IsActionJustPressed("camera_lock")) _lock = !_lock;
             if (Input.IsActionJustReleased("camera_center")) _lock = false;
             if (_lock || Input.IsActionPressed("camera_center"))
-            {
                 if (ClientRoot.Instance.GameState.Entities.TryGet(localId, out var hero))
                 {
                     Position = hero.Position;
                     return;
                 }
-            }
         }
 
         var viewport = GetViewport().GetVisibleRect();

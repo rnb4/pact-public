@@ -1,12 +1,12 @@
 using Godot;
-using Pact.Server.Repos;
+using Pact.Shared;
 
 namespace Pact.Server.Systems;
 
 public class MovementSystem : ISystem
 {
     private static GameState State => Game.Instance.State;
-    
+
     // TODO: Add boidslike for avoidance
 
     public void Tick(double delta)
@@ -14,7 +14,7 @@ public class MovementSystem : ISystem
         foreach (var (id, entity) in State.Heroes())
         {
             if (entity.Path.IsEmpty() || entity.PathIndex >= entity.Path.Length) continue;
-            
+
             var next = entity.Path[entity.PathIndex];
             var toNext = next - entity.Position;
             var step = entity.Speed * (float)delta;

@@ -7,7 +7,7 @@ public enum Operation
 {
     Flat,
     PercentAdd,
-    PercentMultiply,
+    PercentMultiply
 }
 
 public record StatModifier(Operation Op, float Value, Source Source);

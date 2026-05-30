@@ -3,6 +3,8 @@ using Pact.Shared.State.Entities;
 
 namespace Pact.Server.Contexts;
 
-public abstract partial record Target;
+public abstract record Target;
+
 public record GroundTarget(Vector2 Position) : Target;
-public record EntityTarget(Entity Entity) : Target;
+
+public record EntityTarget(IEntity Entity) : Target;

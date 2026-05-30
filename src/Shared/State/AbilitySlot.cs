@@ -6,5 +6,5 @@ public enum AbilitySlot : byte
     Primary,
     Secondary,
     Tertiary,
-    Ultimate,
+    Ultimate
 }

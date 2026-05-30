@@ -1,5 +1,5 @@
 using MemoryPack;
-using Pact.Shared.Snapshot;
+using EntityId = Pact.Shared.State.EntityId;
 
 namespace Pact.Shared.Messages.Requests;
 

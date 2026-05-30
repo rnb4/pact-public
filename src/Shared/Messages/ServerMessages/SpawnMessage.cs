@@ -2,9 +2,9 @@ using System;
 using Godot;
 using MemoryPack;
 using Pact.Models;
-using Pact.Shared.Snapshot;
 using Pact.Shared.State.Entities;
 using ClientRoot = Pact.Client.ClientRoot;
+using EntityId = Pact.Shared.State.EntityId;
 
 namespace Pact.Shared.Messages.ServerMessages;
 

@@ -1,7 +1,6 @@
 using System;
 using Pact.Models;
 using Pact.Shared.Messages.ServerMessages;
-using Pact.Shared.Snapshot;
 using Pact.Shared.State.Entities;
 
 namespace Pact.Client.Handlers;

@@ -4,7 +4,14 @@ namespace Pact.Client;
 
 public enum FacingDirection : byte
 {
-    N, NE, E, SE, S, SW, W, NW
+    N,
+    NE,
+    E,
+    SE,
+    S,
+    SW,
+    W,
+    NW
 }
 
 public static class FacingDirectionExtensions
@@ -26,17 +33,20 @@ public static class FacingDirectionExtensions
             _ => FacingDirection.S
         };
     }
-    
-    public static string ToString(this FacingDirection facing) => facing switch
+
+    public static string ToString(this FacingDirection facing)
     {
-        FacingDirection.N  => "n",
-        FacingDirection.NE => "ne",
-        FacingDirection.E  => "e",
-        FacingDirection.SE => "se",
-        FacingDirection.S  => "s",
-        FacingDirection.SW => "sw",
-        FacingDirection.W  => "w",
-        FacingDirection.NW => "nw",
-        _      => "s"
-    }; 
+        return facing switch
+        {
+            FacingDirection.N => "n",
+            FacingDirection.NE => "ne",
+            FacingDirection.E => "e",
+            FacingDirection.SE => "se",
+            FacingDirection.S => "s",
+            FacingDirection.SW => "sw",
+            FacingDirection.W => "w",
+            FacingDirection.NW => "nw",
+            _ => "s"
+        };
+    }
 }

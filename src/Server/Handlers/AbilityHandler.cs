@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.Linq;
 using Godot;
@@ -14,26 +13,27 @@ namespace Pact.Server.Handlers;
 
 public class AbilityHandler : IRequestHandler<AbilityRequest>
 {
-    private static Game Game => Game.Instance;
     private static readonly float RangeAdjustment = 2f.UnitsToPixels();
     private static readonly float RepathThreshold = 0.5f.UnitsToPixels();
-    
+    private static Game Game => Game.Instance;
+
     public Result Handle(AbilityRequest request)
     {
         if (HandlerGuards.ValidateRequester(request, out var caster) is { IsValid: false } casterResult)
             return casterResult;
         if (HandlerGuards.ValidateHeroModel(caster.ModelId, out var casterModel) is { IsValid: false } heroResult)
             return heroResult;
-        if (HandlerGuards.ValidateAbility(casterModel, request.Slot, out var abilityModel) is { IsValid: false } abilityResult)
+        if (HandlerGuards.ValidateAbility(casterModel, request.Slot, out var abilityModel) is
+            { IsValid: false } abilityResult)
             return abilityResult;
-        if (HandlerGuards.ValidateTarget(request, out var target) is { IsValid: false} targetResult)
+        if (HandlerGuards.ValidateTarget(request, out var target) is { IsValid: false } targetResult)
             return targetResult;
-        
+
         var targetPos = target switch
         {
             EntityTarget { Entity: var e } => e.Position,
             GroundTarget { Position: var p } => p,
-            _ => throw new UnreachableException(),
+            _ => throw new UnreachableException()
         };
 
         var range = abilityModel.Range.UnitsToPixels();
@@ -46,7 +46,8 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
                 caster.LookDirection = caster.Position.DirectionTo(targetPos);
                 PathfinderOp.Stop(ref caster);
                 Game.State.Entities.Set(request.EntityId, caster);
-                AbilityDomain.Cast(request.EntityId, request.Slot, target, abilityModel, Game, caster.LookDirection.ToFacingDirection());
+                AbilityDomain.Cast(request.EntityId, request.Slot, target, abilityModel, Game,
+                    caster.LookDirection.ToFacingDirection());
 
                 if (request.Slot == AbilitySlot.Basic)
                     ActionDomain.QueuedActions[request.EntityId] = request;
@@ -64,7 +65,6 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
             var stopPoint = targetPos - toTarget * (range - RangeAdjustment);
 
             if (!AbilityDomain.IsCasting(request.EntityId))
-            {
                 switch (target)
                 {
                     case EntityTarget:
@@ -76,6 +76,7 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
                             PathfinderOp.RequestPath(ref caster, stopPoint);
                             Game.State.Entities.Set(request.EntityId, caster);
                         }
+
                         break;
                     }
                     case GroundTarget:
@@ -83,9 +84,10 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
                         Game.State.Entities.Set(request.EntityId, caster);
                         break;
                 }
-            }
+
             ActionDomain.QueuedActions[request.EntityId] = request;
         }
+
         return Result.Ok;
     }
 }

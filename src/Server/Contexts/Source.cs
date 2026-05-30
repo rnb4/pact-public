@@ -1,4 +1,4 @@
-using Pact.Shared.Snapshot;
+using EntityId = Pact.Shared.State.EntityId;
 
 namespace Pact.Server.Contexts;
 

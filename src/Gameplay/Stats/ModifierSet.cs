@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Pact.Server.Contexts;
 using Source = Pact.Server.Contexts.Source;
 
 namespace Pact.Gameplay.Stats;
@@ -9,7 +7,32 @@ namespace Pact.Gameplay.Stats;
 // TODO: data drive stats
 public class ModifierSet
 {
-    private List<StatModifier> _modifiers = [];
+    private readonly List<StatModifier> _modifiers = [];
+
+    public float Sum => _modifiers.Where(modifier => modifier.Op == Operation.Flat).Sum(modifier => modifier.Value);
+
+    public float Multiplier
+    {
+        get
+        {
+            var pctAdd = 1f;
+            var pctMul = 1f;
+            foreach (var modifier in _modifiers)
+                switch (modifier.Op)
+                {
+                    case Operation.PercentAdd:
+                        pctAdd += modifier.Value;
+                        break;
+                    case Operation.PercentMultiply:
+                        pctMul *= 1f * modifier.Value;
+                        break;
+                    case Operation.Flat:
+                    default: continue;
+                }
+
+            return pctAdd * pctMul;
+        }
+    }
 
     public void Add(StatModifier modifier)
     {
@@ -23,32 +46,9 @@ public class ModifierSet
             _modifiers.Remove(modifier);
         return toRemove.Count;
     }
-    
-    public float Sum => _modifiers.Where(modifier => modifier.Op == Operation.Flat).Sum(modifier => modifier.Value);
 
-    public float Multiplier
+    public float Apply(float value)
     {
-        get
-        {
-            var pctAdd = 1f;
-            var pctMul = 1f;
-            foreach (var modifier in _modifiers)
-            {
-                switch (modifier.Op)
-                {
-                    case Operation.PercentAdd:
-                        pctAdd += modifier.Value;
-                        break;
-                    case Operation.PercentMultiply:
-                        pctMul *= 1f * modifier.Value;
-                        break;
-                    case Operation.Flat:
-                    default: continue;
-                }
-            }
-            return pctAdd * pctMul;
-        }
+        return (value + Sum) * Multiplier;
     }
-    
-    public float Apply(float value) => (value + Sum) * Multiplier;
 }

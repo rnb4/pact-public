@@ -1,25 +1,38 @@
 using System.Collections.Generic;
 using Godot;
-using Pact.Shared.Snapshot;
 using Pact.Shared.State;
 using Pact.Shared.State.Entities;
+using EntityId = Pact.Shared.State.EntityId;
 using HeroState = Pact.Shared.State.Entities.HeroState;
 
-namespace Pact.Server.Repos;
+namespace Pact.Shared;
 
-public class GameState
+public record struct GameState()
 {
-    public uint Tick { get; set; }
-    public readonly EntityTable<Entity> Entities = new();
     public readonly Dictionary<long, Vector2> CursorPositions = [];
+    public readonly EntityTable<IEntity> Entities = new();
 
-    public IEnumerable<(EntityId, T)> Query<T>() where T : Entity
+    public uint Tick= 0;
+
+    public void Next()
+    {
+        Tick++;
+    }
+    
+    public IEnumerable<(EntityId, T)> Query<T>() where T : IEntity
     {
         foreach (var (id, e) in Entities.All())
             if (e is T heroState)
                 yield return (id, heroState);
     }
-    
-    public IEnumerable<(EntityId, HeroState)> Heroes() => Query<HeroState>();
-    public IEnumerable<(EntityId, HomingProjectileState)> HomingProjectiles() => Query<HomingProjectileState>();
+
+    public IEnumerable<(EntityId, HeroState)> Heroes()
+    {
+        return Query<HeroState>();
+    }
+
+    public IEnumerable<(EntityId, HomingProjectileState)> HomingProjectiles()
+    {
+        return Query<HomingProjectileState>();
+    }
 }

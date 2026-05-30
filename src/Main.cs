@@ -22,7 +22,7 @@ public partial class Main : Node
     private void StartServer()
     {
         var peer = new ENetMultiplayerPeer();
-        peer.CreateServer(4444, maxClients: 10);
+        peer.CreateServer(4444, 10);
         Multiplayer.MultiplayerPeer = peer;
 
         var host = GD.Load<PackedScene>("res://scenes/server_root.tscn").Instantiate();
@@ -31,6 +31,7 @@ public partial class Main : Node
             GD.PrintErr("Failed to load server scene");
             return;
         }
+
         AddChild(host);
     }
 
@@ -41,7 +42,7 @@ public partial class Main : Node
         peer.CreateClient("127.0.0.1", 4444);
         Multiplayer.MultiplayerPeer = peer;
     }
-    
+
     private void OnConnectedToServer()
     {
         var client = GD.Load<PackedScene>("res://scenes/client_root.tscn").Instantiate();
@@ -50,6 +51,7 @@ public partial class Main : Node
             GD.PrintErr("Could not load client scene");
             return;
         }
+
         AddChild(client);
     }
 }

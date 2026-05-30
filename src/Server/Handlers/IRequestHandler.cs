@@ -1,4 +1,3 @@
-using Pact.Server.Contexts;
 using Pact.Shared.Messages.Results;
 
 namespace Pact.Server.Handlers;

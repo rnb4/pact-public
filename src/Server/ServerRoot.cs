@@ -1,6 +1,6 @@
 using Godot;
 using Pact.AutoLoad;
-using Pact.Gameplay.Maps;
+using Map = Pact.Shared.Scenes.Map;
 
 namespace Pact.Server;
 
@@ -14,7 +14,7 @@ public partial class ServerRoot : Node2D
         // Load map
         var map = GD.Load<PackedScene>("res://scenes/maps/map_01.tscn").Instantiate<Map>();
         AddChild(map);
-        
+
         // Build runtime
         _game = Game.Build(map, Multiplayer);
 
@@ -25,5 +25,8 @@ public partial class ServerRoot : Node2D
         Multiplayer.PeerDisconnected += _game.OnPeerDisconnected;
     }
 
-    public override void _PhysicsProcess(double delta) =>_game.Tick(delta);
+    public override void _PhysicsProcess(double delta)
+    {
+        _game.Tick(delta);
+    }
 }

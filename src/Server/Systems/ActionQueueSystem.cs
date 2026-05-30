@@ -11,7 +11,6 @@ public class ActionQueueSystem : ISystem
     public void Tick(double delta)
     {
         foreach (var (id, request) in ActionDomain.QueuedActions.ToList())
-        {
             if (request is MoveRequest moveRequest)
             {
                 if (AbilityDomain.Casts.Any(c => c.CasterId == id)) continue;
@@ -23,6 +22,5 @@ public class ActionQueueSystem : ISystem
             {
                 Game.Handle(request);
             }
-        }
     }
 }

@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Pact.Shared.Snapshot;
+using Pact.Shared.State.Entities;
 
 namespace Pact.Shared.State;
 
 public class EntityTable<T>
 {
-    private T[] _slots = new T[64];
-    private byte[] _generation = new byte[64];
     private readonly HashSet<uint> _free = [];
     private uint _count;
+    private byte[] _generation = new byte[64];
+    private T[] _slots = new T[64];
 
     public EntityId Allocate(T initial)
     {
@@ -47,6 +47,7 @@ public class EntityTable<T>
             value = default!;
             return false;
         }
+
         value = _slots[id.Index];
         return true;
     }
@@ -62,14 +63,29 @@ public class EntityTable<T>
             Set(tuple.Item1, tuple.Item2);
     }
 
+    public delegate void RefAction<TItem>(ref TItem item);
+
+    public bool Modify(EntityId id, RefAction<T> op)
+    {
+        if (!IsAlive(id))
+            return false;
+        var e = _slots[id.Index];
+        op(ref e);
+        _slots[id.Index] = e;
+        return true;
+    }
+
     public void Free(EntityId id)
     {
         if (!IsAlive(id)) return;
         _generation[id.Index]++;
         _free.Add(id.Index);
     }
-    
-    public bool IsAlive(EntityId id) => id.Index < _count && _generation[id.Index] == id.Generation;
+
+    public bool IsAlive(EntityId id)
+    {
+        return id.Index < _count && _generation[id.Index] == id.Generation;
+    }
 
     public IEnumerable<(EntityId id, T value)> All()
     {

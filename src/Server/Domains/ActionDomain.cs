@@ -1,11 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Godot;
-using Pact.Gameplay.Stats;
 using Pact.Models;
-using Pact.Shared.ServerMessages;
-using Pact.Shared.Snapshot;
 using Pact.Shared.State;
+using EntityId = Pact.Shared.State.EntityId;
 using IRequest = Pact.Shared.Messages.Requests.IRequest;
 
 namespace Pact.Server.Domains;
@@ -28,9 +25,11 @@ public static class ActionDomain
         return true;
     }
 
-    public static bool CanCancelBasic(EntityId casterId) =>
-        AbilityDomain.Casts.Any(c => c.CasterId == casterId && c.Slot == AbilitySlot.Basic) &&
-        !IsBasicAttackLocked(casterId);
+    public static bool CanCancelBasic(EntityId casterId)
+    {
+        return AbilityDomain.Casts.Any(c => c.CasterId == casterId && c.Slot == AbilitySlot.Basic) &&
+               !IsBasicAttackLocked(casterId);
+    }
 
     public static bool IsBasicAttackLocked(EntityId casterId)
     {
@@ -41,6 +40,7 @@ public static class ActionDomain
             var frame = AbilityDomain.CurrentFrame(cast);
             if (frame >= basic.PreCancelFrame && frame <= basic.PostCancelFrame) return true;
         }
+
         return false;
     }
 }

@@ -6,6 +6,7 @@ namespace Pact.Gameplay.Stats;
 // TODO: data driven stats
 public class Stat
 {
+    public readonly ModifierSet Modifiers = new();
     private float _base;
 
     public float Base
@@ -17,12 +18,10 @@ public class Stat
             Updated?.Invoke();
         }
     }
-    
-    public readonly ModifierSet Modifiers = new();
-    
-    public event Action? Updated;
 
     public float Value => Modifiers.Apply(_base);
+
+    public event Action? Updated;
 
     public void Add(StatModifier modifier)
     {

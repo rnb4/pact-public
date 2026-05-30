@@ -2,11 +2,6 @@ namespace Pact.Shared.Messages.Results;
 
 public class Result
 {
-    public RejectReason Reason { get; }
-    public bool IsValid => Reason == RejectReason.None;
-    private Result(RejectReason reason) { Reason = reason; }
-    public override string ToString() => Reason.ToString();
-    
     public static readonly Result Ok = new(RejectReason.None);
     public static readonly Result Unauthorized = new(RejectReason.Unauthorized);
     public static readonly Result HeroNotFound = new(RejectReason.HeroNotFound);
@@ -18,4 +13,17 @@ public class Result
     public static readonly Result AlreadyCasting = new(RejectReason.AlreadyCasting);
     public static readonly Result QueueFull = new(RejectReason.QueueFull);
     public static readonly Result NotImplemented = new(RejectReason.NotImplemented);
+
+    private Result(RejectReason reason)
+    {
+        Reason = reason;
+    }
+
+    public RejectReason Reason { get; }
+    public bool IsValid => Reason == RejectReason.None;
+
+    public override string ToString()
+    {
+        return Reason.ToString();
+    }
 }

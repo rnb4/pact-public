@@ -1,4 +1,4 @@
-namespace Pact.Shared.State;
+namespace Pact.Server.Contexts;
 
 public struct DamageInstance
 {

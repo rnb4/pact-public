@@ -1,16 +1,14 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Godot;
 
-namespace Pact.Gameplay.Maps;
+namespace Pact.Shared.Scenes;
 
 public partial class Map : Node2D
 {
-    public NavigationRegion2D NavigationRegion2D { get; private set; } = null!;
-    public readonly List<Vector2> RedSpawns = [];
     public readonly List<Vector2> BlueSpawns = [];
-    
+    public readonly List<Vector2> RedSpawns = [];
+    public NavigationRegion2D NavigationRegion2D { get; private set; } = null!;
+
     public override void _Ready()
     {
         NavigationRegion2D = GetNodeOrNull<NavigationRegion2D>("Navigation/NavigationRegion (NR)");

@@ -1,16 +1,15 @@
 using Godot;
 using MemoryPack;
 using Pact.AutoLoad;
-using Pact.Client;
-using Pact.Shared.Snapshot;
+using EntityId = Pact.Shared.State.EntityId;
 
-namespace Pact.Shared.ServerMessages;
+namespace Pact.Shared.Messages.ServerMessages;
 
 [MemoryPackable]
-public partial class NotifyLocalIdMessage : Messages.ServerMessages.IServerMessage
+public partial class NotifyLocalIdMessage : IServerMessage
 {
     public EntityId LocalEntityId { get; set; }
-    
+
     public void Handle()
     {
         NetworkManager.Instance.LocalEntityId = LocalEntityId;

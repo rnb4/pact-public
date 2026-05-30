@@ -4,7 +4,6 @@ using Pact.Server.Operations;
 using Pact.Shared.Messages.Requests;
 using Pact.Shared.Messages.Results;
 using Pact.Shared.Messages.ServerMessages;
-using Pact.Shared.State;
 
 namespace Pact.Server.Handlers;
 
@@ -25,7 +24,7 @@ public class MoveHandler : IRequestHandler<MoveRequest>
             ActionDomain.QueuedActions[hero.EntityId] = request;
             return Result.Ok;
         }
-        
+
         PathfinderOp.RequestPath(ref hero, request.Destination);
         Game.Instance.State.Entities.Set(request.EntityId, hero);
         ActionDomain.QueuedActions.Remove(request.EntityId);

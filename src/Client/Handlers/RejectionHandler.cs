@@ -1,5 +1,4 @@
 using Godot;
-using Pact.Shared.ServerMessages;
 using RejectionMessage = Pact.Shared.Messages.ServerMessages.RejectionMessage;
 
 namespace Pact.Client.Handlers;

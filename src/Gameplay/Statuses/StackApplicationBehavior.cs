@@ -4,5 +4,5 @@ namespace Pact.Gameplay.Statuses;
 public enum StackApplicationBehavior
 {
     KeepDuration,
-    RefreshDuration,
+    RefreshDuration
 }

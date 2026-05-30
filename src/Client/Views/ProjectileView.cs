@@ -1,5 +1,4 @@
 using Godot;
-using Pact.Shared.Snapshot;
 using Pact.Shared.State.Entities;
 
 namespace Pact.Client.Views;
@@ -15,8 +14,9 @@ public partial class ProjectileView : View
 
     public override void _Process(double delta)
     {
-        if (!ClientRoot.Instance.GameState.Entities.TryGet(Id, out var e) || e is not HomingProjectileState entity) return;
-        
+        if (!ClientRoot.Instance.GameState.Entities.TryGet(Id, out var e) ||
+            e is not HomingProjectileState entity) return;
+
         SmoothedPosition = SmoothedPosition.Lerp(entity.Position, PositionSmoothing * (float)delta);
         var moveDelta = SmoothedPosition - GlobalPosition;
         GlobalPosition = SmoothedPosition;

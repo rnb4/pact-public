@@ -1,11 +1,10 @@
-using System.Linq;
 using Godot;
 using Pact.AutoLoad;
 using Pact.Client.Views;
 using Pact.Shared.Messages.Requests;
-using Pact.Shared.Snapshot;
 using AbilityRequest = Pact.Shared.Messages.Requests.AbilityRequest;
 using AbilitySlot = Pact.Shared.State.AbilitySlot;
+using EntityId = Pact.Shared.State.EntityId;
 
 namespace Pact.Client.Systems;
 
@@ -13,7 +12,7 @@ namespace Pact.Client.Systems;
 public partial class InputManager : Node2D
 {
     private static readonly float HeroPickRadius = 1f.UnitsToPixels();
-    
+
     private HeroView? _hoveredHero;
 
     public override void _Process(double delta)
@@ -38,9 +37,9 @@ public partial class InputManager : Node2D
         {
             NetworkManager.Instance.SendRequest(new AbilityRequest
             {
-                EntityId = (EntityId)localEntityId,
+                EntityId = localEntityId,
                 Slot = AbilitySlot.Basic,
-                TargetEntityId = _hoveredHero.Id,
+                TargetEntityId = _hoveredHero.Id
             });
             return;
         }
@@ -50,7 +49,7 @@ public partial class InputManager : Node2D
             NetworkManager.Instance.SendRequest(new MoveRequest
             {
                 EntityId = localEntityId,
-                Destination = GetGlobalMousePosition(),
+                Destination = GetGlobalMousePosition()
             });
             return;
         }
@@ -60,13 +59,13 @@ public partial class InputManager : Node2D
         else if (Input.IsActionJustPressed("ability_secondary")) slot = AbilitySlot.Secondary;
         else if (Input.IsActionJustPressed("ability_tertiary")) slot = AbilitySlot.Tertiary;
         else if (Input.IsActionJustPressed("ability_ultimate")) slot = AbilitySlot.Ultimate;
-        
+
         if (!slot.HasValue) return;
 
         NetworkManager.Instance.SendRequest(new AbilityRequest
         {
             EntityId = localEntityId,
-            Slot = slot.Value,
+            Slot = slot.Value
         });
     }
 
@@ -83,8 +82,7 @@ public partial class InputManager : Node2D
                 best = hero.EntityId;
             }
         }
+
         return best;
     }
-
-
 }

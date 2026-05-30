@@ -1,12 +1,13 @@
+using System;
 using MemoryPack;
 
-namespace Pact.Shared.ServerMessages;
+namespace Pact.Shared.Messages.ServerMessages;
 
 [MemoryPackable]
-public partial class VfxServerMessage : Messages.ServerMessages.IServerMessage
+public partial class VfxServerMessage : IServerMessage
 {
     public void Handle()
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 }

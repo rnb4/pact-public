@@ -7,5 +7,5 @@ public enum TriggerType : byte
     OnActivate,
     OnQuery,
     OnInterval,
-    OnEvent,
+    OnEvent
 }

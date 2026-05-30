@@ -1,6 +1,6 @@
 using Godot;
 using Pact.AutoLoad;
-using Pact.Shared.ServerMessages;
+using NotifyLocalIdMessage = Pact.Shared.Messages.ServerMessages.NotifyLocalIdMessage;
 
 namespace Pact.Client.Handlers;
 

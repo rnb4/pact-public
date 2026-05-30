@@ -1,8 +1,8 @@
-namespace Pact.Shared.State;
+namespace Pact.Server.Contexts;
 
 public enum DamageType : byte
 {
     Physical,
     Magical,
-    True,
+    True
 }

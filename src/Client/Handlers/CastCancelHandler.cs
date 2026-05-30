@@ -6,6 +6,5 @@ public class CastCancelHandler : MessageHandler<CastCancelServerMessage>
 {
     public override void Handle(CastCancelServerMessage message)
     {
-        
     }
 }

@@ -1,11 +1,8 @@
-using System;
 using Pact.Models;
 using Pact.Server.Contexts;
 using Pact.Server.Domains;
-using Pact.Server.Repos;
 using Pact.Shared.Messages.Requests;
 using Pact.Shared.Messages.Results;
-using Pact.Shared.Snapshot;
 using Pact.Shared.State;
 using Pact.Shared.State.Entities;
 
@@ -15,7 +12,7 @@ public static class HandlerGuards
 {
     public static Result ValidateRequester(IHeroRequest request, out HeroState caster)
     {
-        caster = null!;
+        caster = default;
         if (!Game.Instance.Players.Owns(request.PeerId, request.EntityId)) return Result.Unauthorized;
         if (!Game.Instance.State.Entities.TryGet(request.EntityId, out var entity)) return Result.HeroNotFound;
         if (entity is not HeroState casterEntity) return Result.InvalidTarget;
@@ -27,7 +24,7 @@ public static class HandlerGuards
     public static Result ValidateTarget(AbilityRequest request, out Target target)
     {
         target = null!;
-        
+
         if (request.TargetEntityId is { } targetId)
         {
             if (!Game.Instance.State.Entities.TryGet(targetId, out var entity)) return Result.HeroNotFound;
@@ -42,7 +39,7 @@ public static class HandlerGuards
             target = new GroundTarget(position);
             return Result.Ok;
         }
-        
+
         return Result.InvalidTarget;
     }
 

@@ -1,6 +1,6 @@
 using Godot;
 using Pact.Models;
-using Pact.Shared.Snapshot;
+using EntityId = Pact.Shared.State.EntityId;
 
 namespace Pact.Server.Operations;
 
@@ -21,7 +21,6 @@ public static class SpawnOp
 
     public static EntityId? SpawnProjectile(string modelId, Vector2 position, EntityId targetId)
     {
-        
         if (!Game.Instance.Models.TryGet<ProjectileModel>(modelId, out var model)) return null;
         var projectile = model.ToState();
         projectile.Position = position;
@@ -32,5 +31,4 @@ public static class SpawnOp
         Game.Instance.State.Entities.Set(id, projectile);
         return id;
     }
-
 }

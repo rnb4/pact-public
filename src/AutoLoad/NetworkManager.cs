@@ -2,8 +2,7 @@ using System;
 using Godot;
 using MemoryPack;
 using Pact.Client.Views;
-using Pact.Shared.ServerMessages;
-using Pact.Shared.Snapshot;
+using EntityId = Pact.Shared.State.EntityId;
 using GameStateSnapshot = Pact.Shared.State.GameStateSnapshot;
 using IRequest = Pact.Shared.Messages.Requests.IRequest;
 using IServerMessage = Pact.Shared.Messages.ServerMessages.IServerMessage;
@@ -12,9 +11,9 @@ namespace Pact.AutoLoad;
 
 public partial class NetworkManager : Node
 {
-    public static NetworkManager Instance { get; private set; } = null!;
     public const int ServerId = 1;
     public const int TickRate = 30;
+    public static NetworkManager Instance { get; private set; } = null!;
     public View? LocalView { get; private set; }
     public EntityId LocalEntityId { get; set; } = EntityId.None;
     public Action<IRequest>? RequestReceived { get; set; }
@@ -27,17 +26,25 @@ public partial class NetworkManager : Node
         Instance = this;
     }
 
-    public void SendRequest(IRequest request) => 
+    public void SendRequest(IRequest request)
+    {
         Send(ServerId, MethodName.ReceiveRequest, request);
+    }
 
-    public void SendRequestUnreliable(IRequest request) => 
+    public void SendRequestUnreliable(IRequest request)
+    {
         Send(ServerId, MethodName.ReceiveRequestUnreliable, request);
+    }
 
-    public void SendSnapshot(int peer, GameStateSnapshot snapshot) => 
+    public void SendSnapshot(int peer, GameStateSnapshot snapshot)
+    {
         Send(peer, MethodName.ReceiveSnapshot, snapshot);
+    }
 
-    public void SendServerMessage(int peer, IServerMessage serverMessage) => 
+    public void SendServerMessage(int peer, IServerMessage serverMessage)
+    {
         Send(peer, MethodName.ReceiveServerMessage, serverMessage);
+    }
 
     public void BroadcastServerMessage(IServerMessage serverMessage)
     {
@@ -45,8 +52,10 @@ public partial class NetworkManager : Node
             SendServerMessage(peer, serverMessage);
     }
 
-    private static void Send<T>(int peer, StringName methodName, T packet) => 
-        Instance.RpcId(peer, methodName,  MemoryPackSerializer.Serialize(packet));
+    private static void Send<T>(int peer, StringName methodName, T packet)
+    {
+        Instance.RpcId(peer, methodName, MemoryPackSerializer.Serialize(packet));
+    }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     public void ReceiveRequest(byte[] payload)
@@ -57,7 +66,7 @@ public partial class NetworkManager : Node
         request.PeerId = senderId;
         RequestReceived?.Invoke(request);
     }
-    
+
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, TransferMode = MultiplayerPeer.TransferModeEnum.Unreliable)]
     public void ReceiveRequestUnreliable(byte[] payload)
     {
@@ -68,14 +77,14 @@ public partial class NetworkManager : Node
         RequestUnreliableReceived?.Invoke(request);
     }
 
-    [Rpc(MultiplayerApi.RpcMode.Authority, TransferMode = MultiplayerPeer.TransferModeEnum.Unreliable)]
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Unreliable)]
     public void ReceiveSnapshot(byte[] payload)
     {
         var snapshot = MemoryPackSerializer.Deserialize<GameStateSnapshot>(payload);
         SnapshotReceived?.Invoke(snapshot);
     }
-    
-    [Rpc(MultiplayerApi.RpcMode.Authority, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+
+    [Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     public void ReceiveServerMessage(byte[] payload)
     {
         var serverMessage = MemoryPackSerializer.Deserialize<IServerMessage>(payload);

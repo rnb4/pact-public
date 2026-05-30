@@ -1,8 +1,3 @@
-using System.Data.Common;
-using System.Linq;
-using Godot;
-using Pact.Models;
-using Pact.Server.Domains;
 using Pact.Server.Operations;
 using Pact.Shared.State;
 using Pact.Shared.State.Entities;
@@ -11,8 +6,8 @@ namespace Pact.Server.Systems;
 
 public class HomingProjectileSystem : ISystem
 {
-    private static EntityTable<Entity> Entities => Game.Instance.State.Entities;
-    
+    private static EntityTable<IEntity> Entities => Game.Instance.State.Entities;
+
     public void Tick(double delta)
     {
         foreach (var (id, e) in Entities.All())
@@ -21,13 +16,14 @@ public class HomingProjectileSystem : ISystem
             var projectile = entity;
             projectile.TimeRemaining -= delta;
             if (projectile.TimeRemaining <= 0) Entities.Free(id);
-            if (!Entities.TryGet(projectile.TargetId, out var hero) 
+            if (!Entities.TryGet(projectile.TargetId, out var hero)
                 || hero is not HeroState target
                 || !target.IsAlive())
             {
                 Entities.Free(id);
                 continue;
             }
+
             var toTarget = target.Position - projectile.Position;
             var step = projectile.Speed * (float)delta;
             var distSq = toTarget.LengthSquared();
@@ -38,6 +34,7 @@ public class HomingProjectileSystem : ISystem
                 Entities.Free(id);
                 continue;
             }
+
             projectile.Position += toTarget.Normalized() * step;
             Entities.Set(id, projectile);
         }

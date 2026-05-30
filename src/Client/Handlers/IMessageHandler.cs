@@ -9,6 +9,10 @@ public interface IMessageHandler
 
 public abstract class MessageHandler<T> : IMessageHandler where T : IServerMessage
 {
-    public void Handle(IServerMessage message) => Handle((T)message);
+    public void Handle(IServerMessage message)
+    {
+        Handle((T)message);
+    }
+
     public abstract void Handle(T message);
 }

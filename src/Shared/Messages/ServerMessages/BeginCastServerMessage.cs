@@ -1,8 +1,7 @@
 using MemoryPack;
 using Pact.Client;
 using Pact.Client.Views;
-using Pact.Shared.ServerMessages;
-using Pact.Shared.Snapshot;
+using EntityId = Pact.Shared.State.EntityId;
 
 namespace Pact.Shared.Messages.ServerMessages;
 
