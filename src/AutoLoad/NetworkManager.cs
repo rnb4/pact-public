@@ -2,10 +2,9 @@ using System;
 using Godot;
 using MemoryPack;
 using Pact.Client.Views;
-using EntityId = Pact.Shared.State.EntityId;
-using GameStateSnapshot = Pact.Shared.State.GameStateSnapshot;
-using IRequest = Pact.Shared.Messages.Requests.IRequest;
-using IServerMessage = Pact.Shared.Messages.ServerMessages.IServerMessage;
+using Pact.Shared.Messages.Requests;
+using Pact.Shared.Messages.ServerMessages;
+using Pact.Shared.State;
 
 namespace Pact.AutoLoad;
 
@@ -15,7 +14,7 @@ public partial class NetworkManager : Node
     public const int TickRate = 30;
     public static NetworkManager Instance { get; private set; } = null!;
     public View? LocalView { get; private set; }
-    public EntityId LocalEntityId { get; set; } = EntityId.None;
+    public int LocalEntityId { get; set; } = -1;
     public Action<IRequest>? RequestReceived { get; set; }
     public Action<IRequest>? RequestUnreliableReceived { get; set; }
     public Action<IServerMessage>? ServerMessageReceived { get; set; }

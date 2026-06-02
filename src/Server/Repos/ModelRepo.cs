@@ -9,10 +9,13 @@ namespace Pact.Server.Repos;
 
 public class ModelRepo
 {
-    private readonly Dictionary<string, HeroModel> _heroes = [];
+    private const long InvalidResourceUid = -1;
+    private readonly Dictionary<long, HeroModel> _heroes = [];
     private readonly Dictionary<Type, object> _lookup;
-    private readonly Dictionary<string, ProjectileModel> _projectiles = [];
-    private readonly Dictionary<string, StatusModel> _statuses = [];
+    private readonly Dictionary<long, ProjectileModel> _projectiles = [];
+    private readonly Dictionary<long, StatusModel> _statuses = [];
+
+    public IReadOnlyList<HeroModel> Heroes => [.. _heroes.Values];
 
     private ModelRepo()
     {
@@ -24,10 +27,10 @@ public class ModelRepo
         };
     }
 
-    public bool TryGet<T>(string id, out T model) where T : Model
+    public bool TryGet<T>(long id, out T model) where T : Model
     {
         if (_lookup.TryGetValue(typeof(T), out var dict))
-            return ((Dictionary<string, T>)dict).TryGetValue(id, out model!);
+            return ((Dictionary<long, T>)dict).TryGetValue(id, out model!);
         model = null!;
         return false;
     }
@@ -40,17 +43,19 @@ public class ModelRepo
         return repo;
     }
 
-    private void RegisterFolder<T>(string path, Dictionary<string, T> registry) where T : Model
+    private void RegisterFolder<T>(string path, Dictionary<long, T> registry) where T : Model
     {
         foreach (var file in DirAccess.GetFilesAt(path))
             if ((file.EndsWith(".tres") || file.EndsWith(".res")) && GD.Load(path + file) is T model)
             {
-                model.ModelId = file.ToLower().Replace(".tres", "").Replace(".res", "");
+                var uid = ResourceLoader.GetResourceUid(path + file);
+                if (uid == InvalidResourceUid) continue;
+                model.ModelId = uid;
                 Register(model, registry);
             }
     }
 
-    private void Register<T>(T model, Dictionary<string, T> registry) where T : Model
+    private void Register<T>(T model, Dictionary<long, T> registry) where T : Model
     {
         registry[model.ModelId] = model;
     }

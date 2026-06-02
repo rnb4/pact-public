@@ -1,23 +1,22 @@
+using Arch.Core;
 using Pact.Models;
+using Pact.Server.Components;
 using Pact.Server.Contexts;
 using Pact.Server.Domains;
 using Pact.Shared.Messages.Requests;
 using Pact.Shared.Messages.Results;
 using Pact.Shared.State;
-using Pact.Shared.State.Entities;
 
 namespace Pact.Server.Handlers;
 
 public static class HandlerGuards
 {
-    public static Result ValidateRequester(IHeroRequest request, out HeroState caster)
+    public static Result ValidateRequester(IHeroRequest request, out Entity caster)
     {
-        caster = default;
-        if (!Game.Instance.Players.Owns(request.PeerId, request.EntityId)) return Result.Unauthorized;
-        if (!Game.Instance.State.Entities.TryGet(request.EntityId, out var entity)) return Result.HeroNotFound;
-        if (entity is not HeroState casterEntity) return Result.InvalidTarget;
-        if (!casterEntity.IsAlive()) return Result.IsDead;
-        caster = casterEntity;
+        if (!Game.Instance.Players.TryGetEntity(request.PeerId, out caster)) return Result.Unauthorized;
+        if (caster.Id != request.EntityId) return Result.Unauthorized;
+        ref var health = ref Game.Instance.World.Get<Pool<Health>>(caster);
+        if (health.Current <= 0) return Result.IsDead;
         return Result.Ok;
     }
 
@@ -27,10 +26,11 @@ public static class HandlerGuards
 
         if (request.TargetEntityId is { } targetId)
         {
-            if (!Game.Instance.State.Entities.TryGet(targetId, out var entity)) return Result.HeroNotFound;
-            if (entity is not HeroState heroEntity) return Result.InvalidTarget;
-            if (!heroEntity.IsAlive()) return Result.IsDead;
-            target = new EntityTarget(heroEntity);
+            if (!Game.Instance.EntityById.TryGetValue(targetId, out var targetEntity)) return Result.HeroNotFound;
+            if (!Game.Instance.World.IsAlive(targetEntity)) return Result.HeroNotFound;
+            ref var health = ref Game.Instance.World.Get<Pool<Health>>(targetEntity);
+            if (health.Current <= 0) return Result.IsDead;
+            target = new EntityTarget(targetEntity);
             return Result.Ok;
         }
 
@@ -43,10 +43,10 @@ public static class HandlerGuards
         return Result.InvalidTarget;
     }
 
-    public static Result ValidateHeroModel(string id, out HeroModel model)
+    public static Result ValidateHeroModel(Entity caster, out HeroModel model)
     {
-        model = null!;
-        if (!Game.Instance.Models.TryGet(id, out model)) return Result.HeroNotFound;
+        var metaData = Game.Instance.World.Get<MetaData>(caster);
+        if (!Game.Instance.Models.TryGet(metaData.ModelId, out model)) return Result.HeroNotFound;
         return Result.Ok;
     }
 

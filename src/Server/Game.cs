@@ -1,17 +1,18 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
+using Arch.Core;
 using Godot;
 using Pact.AutoLoad;
+using Pact.Server.Components;
 using Pact.Server.Handlers;
 using Pact.Server.Operations;
 using Pact.Server.Repos;
 using Pact.Server.Systems;
-using Pact.Shared;
 using Pact.Shared.Messages.Requests;
 using Pact.Shared.Messages.Results;
 using Pact.Shared.Messages.ServerMessages;
 using Pact.Shared.State;
+using Pact.Shared.State.Entities;
 using Map = Pact.Shared.Scenes.Map;
 using NotifyLocalIdMessage = Pact.Shared.Messages.ServerMessages.NotifyLocalIdMessage;
 
@@ -27,10 +28,12 @@ public class Game
     public readonly PlayerRepo Players = new();
 
     // Repos
-    public GameState State = new();
+    // public GameState State = new();
+    public readonly World World = World.Create();
+    public readonly Dictionary<int, Entity> EntityById = [];
+    public uint CurrentTick = 0;
 
     private int _peerNum;
-
 
     private Game()
     {
@@ -68,15 +71,48 @@ public class Game
         while (IncomingRequests.TryDequeue(out var request))
             Handle(request);
 
-        State.Next();
+        CurrentTick++;
         foreach (var system in TickOrder) system.Tick(delta);
 
         foreach (var peer in Multiplayer.GetPeers())
+        {
+            var heroes = new List<HeroState>();
+            var heroQuery = new QueryDescription().WithAll<Hero, Position, Pool<Health>, Pool<Mana>, MetaData, LookDirection>();
+            World.Query(in heroQuery, (Entity entity, ref Position position, ref Pool<Health> health, ref Pool<Mana> mana, ref MetaData meta, ref LookDirection lookDirection) =>
+            {
+                heroes.Add(new HeroState
+                {
+                    EntityId = entity.Id,
+                    ModelId = meta.ModelId,
+                    Name = meta.Name,
+                    Position = position.Value,
+                    Health = health.Current,
+                    MaxHealth = health.Max,
+                    Mana = mana.Current,
+                    MaxMana = mana.Max,
+                    LookDirection = lookDirection.Value,
+                });
+            });
+
+            var projectiles = new List<HomingProjectileState>();
+            var projectileQuery = new QueryDescription().WithAll<HomingProjectile, Position, MetaData>();
+            World.Query(in projectileQuery, (Entity entity, ref Position position, ref MetaData metaData) =>
+            {
+                projectiles.Add(new HomingProjectileState
+                {
+                    Position = position.Value,
+                    EntityId = entity.Id,
+                    ModelId = metaData.ModelId,
+                });
+            });
+            
             NetworkManager.Instance.SendSnapshot(peer, new GameStateSnapshot
             {
-                Heroes = State.Heroes().Select(e => e.Item2).ToArray(),
-                Projectiles = State.HomingProjectiles().Select(e => e.Item2).ToArray()
+                Tick = CurrentTick,
+                Heroes = heroes.ToArray(),
+                HomingProjectiles = projectiles.ToArray(),
             });
+        }
     }
 
     public void Handle(IRequest request)
@@ -95,13 +131,14 @@ public class Game
 
     public void OnPeerConnected(long peerId)
     {
-        var modelId = _peerNum++ % 2 == 0 ? "knight" : "wizard";
-        var entityId = SpawnOp.SpawnHero(peerId, modelId, new Vector2(1000, 1000));
-        GD.Print("OnPeerConnected: " + entityId);
-        if (entityId == null) return;
+        var heroes = Models.Heroes;
+        if (heroes.Count == 0) return;
+        var model = heroes[_peerNum++ % heroes.Count];
+        var hero = SpawnOp.SpawnHero(peerId, model, new Vector2(1000, 1000));
+        GD.Print("OnPeerConnected: " + hero);
         NetworkManager.Instance.SendServerMessage((int)peerId, new NotifyLocalIdMessage
         {
-            LocalEntityId = entityId.Value
+            LocalEntityId = hero.Id
         });
     }
 

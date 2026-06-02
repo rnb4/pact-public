@@ -7,8 +7,8 @@
 [resource]
 script = ExtResource("1_1744r")
 Name = "Knight"
-ViewScene = ExtResource("1_euxo7")
 BasicAttack = ExtResource("1_lhva3")
+HealthRegen = 0.0
 MoveSpeed = 3.25
-ModelId = &"knight"
+ViewScene = ExtResource("1_euxo7")
 metadata/_custom_type_script = "uid://wh8k0hm5nybe"

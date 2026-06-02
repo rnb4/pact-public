@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Linq;
-using Godot;
 using Pact.Client;
+using Pact.Server.Components;
 using Pact.Server.Contexts;
 using Pact.Server.Domains;
 using Pact.Server.Operations;
@@ -21,7 +21,7 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
     {
         if (HandlerGuards.ValidateRequester(request, out var caster) is { IsValid: false } casterResult)
             return casterResult;
-        if (HandlerGuards.ValidateHeroModel(caster.ModelId, out var casterModel) is { IsValid: false } heroResult)
+        if (HandlerGuards.ValidateHeroModel(caster, out var casterModel) is { IsValid: false } heroResult)
             return heroResult;
         if (HandlerGuards.ValidateAbility(casterModel, request.Slot, out var abilityModel) is
             { IsValid: false } abilityResult)
@@ -29,63 +29,61 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
         if (HandlerGuards.ValidateTarget(request, out var target) is { IsValid: false } targetResult)
             return targetResult;
 
+        ref var position = ref Game.World.Get<Position>(caster);
+
         var targetPos = target switch
         {
-            EntityTarget { Entity: var e } => e.Position,
+            EntityTarget { Entity: var e } => Game.World.Get<Position>(e).Value,
             GroundTarget { Position: var p } => p,
             _ => throw new UnreachableException()
         };
 
         var range = abilityModel.Range.UnitsToPixels();
-        var inRange = caster.Position.DistanceTo(targetPos) <= range;
+        var inRange = position.Value.DistanceTo(targetPos) <= range;
 
         if (inRange)
         {
-            if (ActionDomain.CanCast(request.EntityId, request.Slot))
+            if (ActionDomain.CanCast(caster, request.Slot))
             {
-                caster.LookDirection = caster.Position.DirectionTo(targetPos);
-                PathfinderOp.Stop(ref caster);
-                Game.State.Entities.Set(request.EntityId, caster);
-                AbilityDomain.Cast(request.EntityId, request.Slot, target, abilityModel, Game,
-                    caster.LookDirection.ToFacingDirection());
+                ref var lookDir = ref Game.World.Get<LookDirection>(caster);
+                lookDir = new LookDirection(position.Value.DirectionTo(targetPos));
+                PathfinderOp.Stop(caster);
+                AbilityDomain.Cast(caster, request.Slot, target, abilityModel, Game,
+                    lookDir.Value.ToFacingDirection());
 
                 if (request.Slot == AbilitySlot.Basic)
-                    ActionDomain.QueuedActions[request.EntityId] = request;
+                    ActionDomain.QueuedActions[caster] = request;
                 else
-                    ActionDomain.QueuedActions.Remove(request.EntityId);
+                    ActionDomain.QueuedActions.Remove(caster);
             }
             else
             {
-                ActionDomain.QueuedActions[request.EntityId] = request;
+                ActionDomain.QueuedActions[caster] = request;
             }
         }
         else
         {
-            var toTarget = caster.Position.DirectionTo(targetPos);
+            var toTarget = position.Value.DirectionTo(targetPos);
             var stopPoint = targetPos - toTarget * (range - RangeAdjustment);
 
-            if (!AbilityDomain.IsCasting(request.EntityId))
+            if (!AbilityDomain.IsCasting(caster))
                 switch (target)
                 {
                     case EntityTarget:
                     {
-                        var pathDone = caster.Path.IsEmpty() || caster.PathIndex >= caster.Path.Length;
-                        var needsPath = pathDone || caster.Path.Last().DistanceTo(stopPoint) >= RepathThreshold;
+                        ref var pathMove = ref Game.World.Get<PathMove>(caster);
+                        var pathDone = pathMove.Path.Length == 0 || pathMove.PathIndex >= pathMove.Path.Length;
+                        var needsPath = pathDone || pathMove.Path.Last().DistanceTo(stopPoint) >= RepathThreshold;
                         if (needsPath)
-                        {
-                            PathfinderOp.RequestPath(ref caster, stopPoint);
-                            Game.State.Entities.Set(request.EntityId, caster);
-                        }
-
+                            PathfinderOp.RequestPath(caster, stopPoint);
                         break;
                     }
                     case GroundTarget:
-                        PathfinderOp.RequestPath(ref caster, stopPoint);
-                        Game.State.Entities.Set(request.EntityId, caster);
+                        PathfinderOp.RequestPath(caster, stopPoint);
                         break;
                 }
 
-            ActionDomain.QueuedActions[request.EntityId] = request;
+            ActionDomain.QueuedActions[caster] = request;
         }
 
         return Result.Ok;

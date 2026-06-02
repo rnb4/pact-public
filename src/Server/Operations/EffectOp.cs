@@ -1,53 +1,53 @@
-using System;
+using Arch.Core;
 using Godot;
 using Pact.Models;
 using Pact.Models.Effects;
 using Pact.Models.Triggers;
-using Pact.Shared.State.Entities;
-using EntityId = Pact.Shared.State.EntityId;
+using Pact.Server.Components;
 
 namespace Pact.Server.Operations;
 
 public static class EffectOp
 {
-    public static void ApplyEffect(string modelId, EntityId casterId, ref HeroState target)
+    public static void ApplyOnHitEffect(long modelId, Entity caster, Entity target)
     {
         if (!Game.Instance.Models.TryGet<ProjectileModel>(modelId, out var model)) return;
-        switch (model.OnHitEffect)
+        ApplyEffect(model.OnHitEffect, caster, target);
+    }
+
+    public static void ApplyTrigger(ActivateTriggerModel trigger, Entity caster, Entity target)
+    {
+        ApplyEffect(trigger.Effect, caster, target);
+    }
+
+    public static void ApplyTrigger(ActivateTriggerModel trigger, Entity caster, Vector2 position)
+    {
+    }
+
+    private static void ApplyEffect(EffectModel effect, Entity caster, Entity target)
+    {
+        switch (effect)
         {
             case DamageEffect dmg:
-                target.Health = Math.Max(0, target.Health - dmg.Amount);
-                GD.Print($"{target.Name} took {dmg.Amount} damage");
-                Game.Instance.State.Entities.Set(target.EntityId, target);
+                ApplyDamageEffect(dmg, caster, target);
                 break;
             case SpawnEffect spawn:
-            {
-                if (!Game.Instance.State.Entities.TryGet(casterId, out var caster)) return;
-                SpawnOp.SpawnProjectile(spawn.Projectile.ModelId, caster.Position, target.EntityId);
+                ApplySpawnEffect(spawn, caster, target);
                 break;
-            }
         }
     }
 
-    public static void ApplyTrigger(ActivateTriggerModel trigger, EntityId casterId, ref HeroState target)
+    private static void ApplyDamageEffect(DamageEffect dmg, Entity caster, Entity target)
     {
-        switch (trigger.Effect)
-        {
-            case DamageEffect dmg:
-                target.Health = Math.Max(0, target.Health - dmg.Amount);
-                GD.Print($"{target.Name} took {dmg.Amount} damage");
-                Game.Instance.State.Entities.Set(target.EntityId, target);
-                break;
-            case SpawnEffect spawn:
-            {
-                if (!Game.Instance.State.Entities.TryGet(casterId, out var caster)) return;
-                SpawnOp.SpawnProjectile(spawn.Projectile.ModelId, caster.Position, target.EntityId);
-                break;
-            }
-        }
+        ref var targetHealth = ref Game.Instance.World.Get<Pool<Health>>(target);
+        var damage = targetHealth.Deplete(dmg.Amount);
+        var casterMeta = Game.Instance.World.Get<MetaData>(caster);
+        var targetMeta = Game.Instance.World.Get<MetaData>(target);
+        GD.Print($"{casterMeta.Name} did {damage} damage to {targetMeta.Name}");
     }
 
-    public static void ApplyTrigger(ActivateTriggerModel trigger, EntityId casterId, Vector2 position)
+    private static void ApplySpawnEffect(SpawnEffect spawn, Entity caster, Entity target)
     {
+        SpawnOp.SpawnProjectile(spawn.Projectile.ModelId, caster, target);
     }
 }

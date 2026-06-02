@@ -2,9 +2,9 @@ using Godot;
 using Pact.AutoLoad;
 using Pact.Client.Views;
 using Pact.Shared.Messages.Requests;
+using Pact.Shared.State.Entities;
 using AbilityRequest = Pact.Shared.Messages.Requests.AbilityRequest;
 using AbilitySlot = Pact.Shared.State.AbilitySlot;
-using EntityId = Pact.Shared.State.EntityId;
 
 namespace Pact.Client.Systems;
 
@@ -31,7 +31,7 @@ public partial class InputManager : Node2D
         if (Multiplayer.IsServer()) return;
 
         var localEntityId = NetworkManager.Instance.LocalEntityId;
-        if (localEntityId == EntityId.None) return;
+        if (localEntityId == -1) return;
 
         if (Input.IsActionJustPressed("basic_attack") && _hoveredHero != null && _hoveredHero.Id != localEntityId)
         {
@@ -69,11 +69,11 @@ public partial class InputManager : Node2D
         });
     }
 
-    private EntityId UpdateHoveredEntity()
+    private int UpdateHoveredEntity()
     {
-        var best = EntityId.None;
+        var best = -1;
         var bestDistance = HeroPickRadius;
-        foreach (var (_, hero) in ClientRoot.Instance.GameState.Heroes())
+        foreach (var hero in ClientRoot.Instance.GameState.Query<HeroState>())
         {
             var distance = hero.Position.DistanceTo(GetGlobalMousePosition());
             if (distance < bestDistance)

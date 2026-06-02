@@ -1,10 +1,47 @@
 [gd_scene format=3 uid="uid://s5ljb5jwf0aj"]
 
 [ext_resource type="Script" uid="uid://nt3o3vydstvn" path="res://src/Client/Views/HeroView.cs" id="1_av3me"]
+[ext_resource type="PackedScene" uid="uid://cpask72nib88p" path="res://scenes/ui/fancy_progress_bar.tscn" id="3_tk8up"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_av3me"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="SystemFont" id="SystemFont_tk8up"]
+font_names = PackedStringArray("Fantasy")
 
 [node name="HeroView" type="Node2D" unique_id=625931354]
 script = ExtResource("1_av3me")
 metadata/_custom_type_script = "uid://nt3o3vydstvn"
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1006249178]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=964990145]
 unique_name_in_owner = true
+
+[node name="Control" type="Control" parent="." unique_id=1923737706]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -40.0
+offset_top = -48.0
+offset_right = -40.0
+offset_bottom = -48.0
+
+[node name="HealthBar" parent="Control" unique_id=106556762 instance=ExtResource("3_tk8up")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_bottom = 6.0
+
+[node name="Panel" type="Panel" parent="Control" unique_id=1057189482]
+layout_mode = 0
+offset_left = -13.0
+offset_top = -2.0
+offset_right = -3.0
+offset_bottom = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_av3me")
+
+[node name="Label" type="Label" parent="Control/Panel" unique_id=1183916638]
+layout_mode = 0
+offset_top = -1.0
+offset_right = 40.0
+offset_bottom = 22.0
+theme_override_fonts/font = SubResource("SystemFont_tk8up")
+theme_override_font_sizes/font_size = 8
+text = "10"

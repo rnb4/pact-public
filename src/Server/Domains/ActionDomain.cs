@@ -1,37 +1,37 @@
 using System.Collections.Generic;
 using System.Linq;
+using Arch.Core;
 using Pact.Models;
+using Pact.Shared.Messages.Requests;
 using Pact.Shared.State;
-using EntityId = Pact.Shared.State.EntityId;
-using IRequest = Pact.Shared.Messages.Requests.IRequest;
 
 namespace Pact.Server.Domains;
 
 public static class ActionDomain
 {
-    public static readonly Dictionary<EntityId, IRequest> QueuedActions = [];
+    public static readonly Dictionary<Entity, IRequest> QueuedActions = [];
 
-    public static bool CanMove(EntityId casterId)
+    public static bool CanMove(Entity casterId)
     {
         if (IsBasicAttackLocked(casterId)) return false;
         if (AbilityDomain.IsCasting(casterId)) return false;
         return true;
     }
 
-    public static bool CanCast(EntityId casterId, AbilitySlot slot)
+    public static bool CanCast(Entity casterId, AbilitySlot slot)
     {
         if (AbilityDomain.IsOnCooldown(casterId, slot)) return false;
         if (AbilityDomain.IsCasting(casterId)) return false;
         return true;
     }
 
-    public static bool CanCancelBasic(EntityId casterId)
+    public static bool CanCancelBasic(Entity casterId)
     {
         return AbilityDomain.Casts.Any(c => c.CasterId == casterId && c.Slot == AbilitySlot.Basic) &&
                !IsBasicAttackLocked(casterId);
     }
 
-    public static bool IsBasicAttackLocked(EntityId casterId)
+    public static bool IsBasicAttackLocked(Entity casterId)
     {
         foreach (var cast in AbilityDomain.Casts)
         {

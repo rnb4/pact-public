@@ -1,5 +1,4 @@
 using MemoryPack;
-using EntityId = Pact.Shared.State.EntityId;
 
 namespace Pact.Shared.Messages.Requests;
 
@@ -7,5 +6,5 @@ namespace Pact.Shared.Messages.Requests;
 public partial class StopRequest : IHeroRequest
 {
     public int PeerId { get; set; }
-    public EntityId EntityId { get; init; }
+    public int EntityId { get; init; }
 }

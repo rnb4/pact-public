@@ -1,22 +1,22 @@
+using Arch.Core;
 using Godot;
-using Pact.Shared.Components;
-using Pact.Shared.State.Entities;
+using Pact.Server.Components;
 
 namespace Pact.Server.Operations;
 
 public static class PathfinderOp
 {
-    public static void RequestPath<T>(ref T pathMover, Vector2 destination) where T : IEntity, IPathMove
+    public static void RequestPath(Entity entity, Vector2 destination)
     {
-        var path = NavigationServer2D.MapGetPath(Game.Instance.NavMap, pathMover.Position, destination, true);
-        pathMover.Path = path;
-        pathMover.PathIndex = 0;
+        ref var position = ref Game.Instance.World.Get<Position>(entity);
+        var path = NavigationServer2D.MapGetPath(Game.Instance.NavMap, position.Value, destination, true);
+        ref var pathMove = ref Game.Instance.World.Get<PathMove>(entity);
+        pathMove = pathMove with { Path = path, PathIndex = 0 };
     }
 
-    public static void Stop<T>(ref T pathMover) where T : IEntity, IPathMove
+    public static void Stop(Entity entity)
     {
-        pathMover.Path = [];
-        pathMover.PathIndex = 0;
-        pathMover.MoveDirection = Vector2.Zero;
+        ref var pathMove = ref Game.Instance.World.Get<PathMove>(entity);
+        pathMove = pathMove with { Path = [], PathIndex = 0, MoveDirection = Vector2.Zero };
     }
 }

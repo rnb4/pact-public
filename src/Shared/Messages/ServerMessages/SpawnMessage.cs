@@ -4,7 +4,6 @@ using MemoryPack;
 using Pact.Models;
 using Pact.Shared.State.Entities;
 using ClientRoot = Pact.Client.ClientRoot;
-using EntityId = Pact.Shared.State.EntityId;
 
 namespace Pact.Shared.Messages.ServerMessages;
 
@@ -12,19 +11,7 @@ namespace Pact.Shared.Messages.ServerMessages;
 public partial class SpawnMessage : IServerMessage
 {
     public EntityType EntityType { get; set; }
-    public EntityId SpawnedEntityId { get; set; }
-    public required string ModelId { get; set; }
+    public int SpawnedEntityId { get; set; }
+    public required long ModelId { get; set; }
     public required Vector2 Position { get; set; }
-
-    public void Handle()
-    {
-        switch (EntityType)
-        {
-            case EntityType.Hero:
-                ClientRoot.Instance.SpawnView<HeroModel>(SpawnedEntityId, ModelId);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
 }

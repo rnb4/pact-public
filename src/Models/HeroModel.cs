@@ -4,7 +4,7 @@ using Pact.Shared.State.Entities;
 namespace Pact.Models;
 
 [GlobalClass]
-public partial class HeroModel : Model, IHasView, IToState<HeroState>
+public partial class HeroModel : Model, IHasView
 {
     [Export] public string Name { get; set; } = "Unnamed Hero";
 
@@ -41,19 +41,4 @@ public partial class HeroModel : Model, IHasView, IToState<HeroState>
     [Export] public float MagicResistGrowth { get; set; } = 1f;
     [Export] public float VisionRangeGrowth { get; set; }
     [Export] public PackedScene? ViewScene { get; set; }
-
-    public HeroState ToState()
-    {
-        return new HeroState
-        {
-            Name = Name,
-            MaxHealth = MaxHealth,
-            Health = MaxHealth,
-            HealthRegen =  HealthRegen,
-            MaxMana = MaxMana,
-            Mana = MaxMana,
-            ManaRegen =  ManaRegen,
-            Speed = MoveSpeed.UnitsToPixels()
-        };
-    }
 }

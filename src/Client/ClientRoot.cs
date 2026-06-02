@@ -7,13 +7,10 @@ using Pact.Client.Systems;
 using Pact.Client.Views;
 using Pact.Models;
 using Pact.Server.Repos;
-using Pact.Shared;
 using Pact.Shared.Messages.ServerMessages;
+using Pact.Shared.Scenes;
 using Pact.Shared.State;
 using Pact.Shared.State.Entities;
-using EntityId = Pact.Shared.State.EntityId;
-using Map = Pact.Shared.Scenes.Map;
-using NotifyLocalIdMessage = Pact.Shared.Messages.ServerMessages.NotifyLocalIdMessage;
 
 namespace Pact.Client;
 
@@ -26,16 +23,15 @@ public partial class ClientRoot : Node2D
         [typeof(BeginCastServerMessage)] = new BeginCastHandler(),
         [typeof(CastCancelServerMessage)] = new CastCancelHandler(),
         [typeof(NotifyLocalIdMessage)] = new NotifyLocalIdHandler(),
+        [typeof(RejectionMessage)] = new RejectionHandler(),
         [typeof(SpawnMessage)] = new SpawnHandler()
     };
 
-    private readonly HashSet<EntityId> _knownHeroes = [];
-    private readonly HashSet<EntityId> _knownProjectiles = [];
     private readonly ModelRepo _models = ModelRepo.Build();
 
-    private readonly Dictionary<EntityId, View> _views = [];
+    private readonly Dictionary<int, View> _views = [];
 
-    public readonly GameState GameState = new();
+    public readonly ClientGameState GameState = new();
     private MobaCamera _camera = null!;
     private InputManager _input = null!;
 
@@ -53,8 +49,7 @@ public partial class ClientRoot : Node2D
         var map = GD.Load<PackedScene>("res://scenes/maps/map_01.tscn").Instantiate<Map>();
         AddChild(map);
 
-        _viewsContainer = new Node2D();
-        _viewsContainer.YSortEnabled = true;
+        _viewsContainer = new Node2D { YSortEnabled = true };
         AddChild(_viewsContainer);
 
         _camera = GetNode<MobaCamera>("%MobaCamera");
@@ -65,55 +60,36 @@ public partial class ClientRoot : Node2D
 
     public void ApplySnapshot(GameStateSnapshot snapshot)
     {
-        ApplyEntityGroup<HeroState, HeroModel>(snapshot.Heroes, _knownHeroes);
-        ApplyEntityGroup<HomingProjectileState, ProjectileModel>(snapshot.Projectiles, _knownProjectiles);
-    }
-
-    private void ApplyEntityGroup<TState, TModel>(
-        IEnumerable<TState> incoming,
-        HashSet<EntityId> known)
-        where TState : IEntity
-        where TModel : Model, IHasView
-    {
-        var incomingIds = new HashSet<EntityId>();
-
-        foreach (var state in incoming)
+        var (added, removed) = GameState.Apply(snapshot);
+        foreach (var e in added)
         {
-            incomingIds.Add(state.EntityId);
-            GameState.Entities.Sync(state.EntityId, state);
-            if (!known.Contains(state.EntityId))
-                SpawnView<TModel>(state.EntityId, state.ModelId);
-        }
-
-        foreach (var id in known)
-            if (!incomingIds.Contains(id))
+            switch (e)
             {
-                DespawnView(id);
-                GameState.Entities.Free(id);
+                case HeroState h: SpawnView<HeroModel>(h.EntityId, h.ModelId, e.Position); break;
+                case HomingProjectileState p: SpawnView<ProjectileModel>(p.EntityId, p.ModelId, e.Position); break;
             }
-
-        known.Clear();
-        known.UnionWith(incomingIds);
+        }
+        foreach (var e in removed) DespawnView(e.EntityId);
     }
 
-    public void SpawnView<T>(EntityId id, string modelId) where T : Model, IHasView
+    public void SpawnView<T>(int id, long modelId, Vector2 position) where T : Model, IHasView
     {
-        _models.TryGet<T>(modelId, out var model);
-        if (model.ViewScene == null) return;
+        if (!_models.TryGet<T>(modelId, out var model) || model.ViewScene == null) return;
         var view = model.ViewScene.Instantiate<View>();
         view.Id = id;
+        view.Position = position;
         _viewsContainer.AddChild(view);
         _views[id] = view;
     }
 
-    public void DespawnView(EntityId id)
+    public void DespawnView(int id)
     {
         var view = _views[id];
         view.QueueFree();
         _views.Remove(id);
     }
 
-    public bool TryGetView(EntityId id, out View? view)
+    public bool TryGetView(int id, out View? view)
     {
         return _views.TryGetValue(id, out view);
     }

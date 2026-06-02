@@ -1,6 +1,4 @@
-using EntityId = Pact.Shared.State.EntityId;
-
 namespace Pact.Server.Contexts;
 
 // identity only
-public record Source(EntityId Caster, int AbilityIndex, int EffectIndex);
+public record struct Source(int CasterId, int AbilityIndex, int EffectIndex);

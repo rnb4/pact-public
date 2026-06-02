@@ -11,23 +11,22 @@ public class MoveHandler : IRequestHandler<MoveRequest>
 {
     public Result Handle(MoveRequest request)
     {
-        if (HandlerGuards.ValidateRequester(request, out var hero) is { IsValid: false } casterResult)
+        if (HandlerGuards.ValidateRequester(request, out var caster) is { IsValid: false } casterResult)
             return casterResult;
 
-        if (ActionDomain.CanCancelBasic(hero.EntityId))
+        if (ActionDomain.CanCancelBasic(caster))
         {
-            AbilityDomain.CancelBasic(hero.EntityId);
-            NetworkManager.Instance.BroadcastServerMessage(new CastCancelServerMessage { CasterId = hero.EntityId });
+            AbilityDomain.CancelBasic(caster);
+            NetworkManager.Instance.BroadcastServerMessage(new CastCancelServerMessage { CasterId = caster.Id });
         }
-        else if (!ActionDomain.CanMove(hero.EntityId))
+        else if (!ActionDomain.CanMove(caster))
         {
-            ActionDomain.QueuedActions[hero.EntityId] = request;
+            ActionDomain.QueuedActions[caster] = request;
             return Result.Ok;
         }
 
-        PathfinderOp.RequestPath(ref hero, request.Destination);
-        Game.Instance.State.Entities.Set(request.EntityId, hero);
-        ActionDomain.QueuedActions.Remove(request.EntityId);
+        PathfinderOp.RequestPath(caster, request.Destination);
+        ActionDomain.QueuedActions.Remove(caster);
         return Result.Ok;
     }
 }

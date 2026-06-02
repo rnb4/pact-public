@@ -10,12 +10,12 @@ public class ActionQueueSystem : ISystem
 
     public void Tick(double delta)
     {
-        foreach (var (id, request) in ActionDomain.QueuedActions.ToList())
+        foreach (var (entity, request) in ActionDomain.QueuedActions.ToList())
             if (request is MoveRequest moveRequest)
             {
-                if (AbilityDomain.Casts.Any(c => c.CasterId == id)) continue;
-                if (!ActionDomain.CanMove(id)) continue;
-                ActionDomain.QueuedActions.Remove(id);
+                if (AbilityDomain.Casts.Any(c => c.CasterId == entity)) continue;
+                if (!ActionDomain.CanMove(entity)) continue;
+                ActionDomain.QueuedActions.Remove(entity);
                 Game.Handle(moveRequest);
             }
             else

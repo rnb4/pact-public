@@ -1,5 +1,8 @@
 using System.Linq;
+using Arch.Core;
 using Godot;
+using Pact.Server.Components;
+using Pact.Server.Operations;
 using Pact.Shared.State.Entities;
 
 namespace Pact.Server.Systems;
@@ -8,14 +11,11 @@ public class ResourceRegenSystem : ISystem
 {
     public void Tick(double delta)
     {
-        foreach (var (id, entity) in Game.Instance.State.Entities.All())
+        var query = new QueryDescription().WithAny<Pool<Health>, Pool<Mana>>();
+        Game.Instance.World.Query(in query, (ref Pool<Mana> mana, ref Pool<Health> health) =>
         {
-            if (entity is not HeroState hero) continue;
-            
-            // regenerate health via op
-            
-            // regenerate mana via op
-        }
+            mana.Regenerate();
+            health.Regenerate();
+        });
     }
-
 }

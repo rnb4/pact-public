@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Arch.Core;
 using Pact.AutoLoad;
 using Pact.Client;
 using Pact.Models;
@@ -7,7 +8,6 @@ using Pact.Models.Triggers;
 using Pact.Server.Contexts;
 using Pact.Shared.Messages.ServerMessages;
 using Pact.Shared.State;
-using EntityId = Pact.Shared.State.EntityId;
 
 namespace Pact.Server.Domains;
 
@@ -16,7 +16,7 @@ public static class AbilityDomain
     public const double AnimationFps = 24.0;
 
     public static readonly List<Cast> Casts = [];
-    public static readonly Dictionary<(EntityId, AbilitySlot), double> Cooldowns = [];
+    public static readonly Dictionary<(Entity, AbilitySlot), double> Cooldowns = [];
 
     public static AbilityModel? GetAbility(HeroModel model, AbilitySlot slot)
     {
@@ -38,18 +38,18 @@ public static class AbilityDomain
         return (int)((pf.Trigger.FireFrame / AnimationFps - pf.TimeRemaining) * AnimationFps);
     }
 
-    public static void StartCooldown(EntityId id, AbilitySlot slot, double cooldown)
+    public static void StartCooldown(Entity id, AbilitySlot slot, double cooldown)
     {
         if (!Cooldowns.ContainsKey((id, slot)))
             Cooldowns[(id, slot)] = cooldown;
     }
 
-    public static bool IsOnCooldown(EntityId id, AbilitySlot slot)
+    public static bool IsOnCooldown(Entity id, AbilitySlot slot)
     {
         return Cooldowns.ContainsKey((id, slot));
     }
 
-    public static void ScheduleFire(EntityId casterId, AbilitySlot slot, Target target, AbilityModel abilityModel)
+    public static void ScheduleFire(Entity casterId, AbilitySlot slot, Target target, AbilityModel abilityModel)
     {
         foreach (var triggerModel in abilityModel.Triggers)
         {
@@ -58,7 +58,7 @@ public static class AbilityDomain
         }
     }
 
-    public static void Cast(EntityId casterId, AbilitySlot slot, Target target, AbilityModel abilityModel, Game game,
+    public static void Cast(Entity casterId, AbilitySlot slot, Target target, AbilityModel abilityModel, Game game,
         FacingDirection facing)
     {
         ScheduleFire(casterId, slot, target, abilityModel);
@@ -66,30 +66,30 @@ public static class AbilityDomain
         {
             if (triggerModel is not ActivateTriggerModel { AnimationName: not null } activate) continue;
             var message = new BeginCastServerMessage
-                { CasterId = casterId, AnimationName = activate.AnimationName, Facing = facing };
+                { CasterId = casterId.Id, AnimationName = activate.AnimationName, Facing = facing };
             foreach (var peer in game.Multiplayer.GetPeers())
                 NetworkManager.Instance.SendServerMessage(peer, message);
         }
     }
 
-    public static bool IsCasting(EntityId casterId)
+    public static bool IsCasting(Entity casterId)
     {
         return Casts.Any(c => c.CasterId == casterId);
     }
 
-    public static void CancelBasic(EntityId casterId)
+    public static void CancelBasic(Entity casterId)
     {
         CancelCast(casterId, AbilitySlot.Basic);
     }
 
-    public static void CancelCast(EntityId casterId, AbilitySlot slot)
+    public static void CancelCast(Entity casterId, AbilitySlot slot)
     {
         Casts.RemoveAll(c => c.CasterId == casterId && c.Slot == slot);
     }
 }
 
 public record Cast(
-    EntityId CasterId,
+    Entity CasterId,
     Target Target,
     AbilitySlot Slot,
     AbilityModel AbilityModel,

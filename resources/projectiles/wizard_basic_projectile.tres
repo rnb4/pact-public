@@ -6,14 +6,15 @@
 
 [sub_resource type="Resource" id="Resource_wkrcs"]
 script = ExtResource("1_faxi2")
-Amount = 3.0
+DamageType = 1
+Amount = 30.0
 metadata/_custom_type_script = "uid://dv8csr6qq4dkl"
 
 [resource]
 script = ExtResource("1_6ogui")
-ViewScene = ExtResource("2_tc2nc")
 Speed = 6.0
 Lifetime = 99.0
-Radius = 1.0
+Radius = 0.5
 OnHitEffect = SubResource("Resource_wkrcs")
+ViewScene = ExtResource("2_tc2nc")
 metadata/_custom_type_script = "uid://bj2joluftf8do"

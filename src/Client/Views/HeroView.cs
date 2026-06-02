@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using Pact.Shared.State.Entities;
 
@@ -10,11 +11,14 @@ public partial class HeroView : View
     private bool _isCasting;
 
     private Vector2 _moveDelta;
+    private FancyProgressBar _healthBar = null!;
+    
     [Export] public float IdleThreshold = 0.5f;
     [Export] public float RunThreshold = 64f;
 
-    [ExportGroup("Animations")] [Export] public StringName RunAnimation { get; set; } = "run";
-
+    [ExportGroup("Animations")] 
+    
+    [Export] public StringName RunAnimation { get; set; } = "run";
     [Export] public StringName WalkAnimation { get; set; } = "walk";
     [Export] public StringName IdleAnimation { get; set; } = "idle";
 
@@ -25,28 +29,32 @@ public partial class HeroView : View
         var material = new ShaderMaterial();
         material.Shader = GD.Load<Shader>("res://assets/shaders/outline.gdshader");
         Sprite.Material = material;
+        _healthBar = GetNode<FancyProgressBar>("%HealthBar");
     }
 
     public override void _Process(double delta)
     {
-        if (!ClientRoot.Instance.GameState.Entities.TryGet(Id, out var e) || e is not HeroState entity) return;
+        if (!ClientRoot.Instance.GameState.TryGet<HeroState>(Id, out var hero)) return;
 
-        SmoothedPosition = SmoothedPosition.Lerp(entity.Position, PositionSmoothing * (float)delta);
+        SmoothedPosition = SmoothedPosition.Lerp(hero.Position, PositionSmoothing * (float)delta);
         _moveDelta = SmoothedPosition - GlobalPosition;
         GlobalPosition = SmoothedPosition;
 
-        if (!Mathf.IsZeroApprox(entity.LookDirection.LengthSquared()))
-            _facing = entity.LookDirection.ToFacingDirection();
+        if (!Mathf.IsZeroApprox(hero.LookDirection.LengthSquared()))
+            _facing = hero.LookDirection.ToFacingDirection();
 
-        if (_isCasting && !Mathf.IsZeroApprox(entity.MoveDirection.LengthSquared()))
+        if (_isCasting && !Mathf.IsZeroApprox(hero.MoveDirection.LengthSquared()))
             _isCasting = false;
 
         if (_isCasting) return;
 
         if (_moveDelta.LengthSquared() > IdleThreshold)
-            PlayWithFacing(entity.Speed > RunThreshold ? RunAnimation : WalkAnimation);
+            PlayWithFacing(hero.Speed > RunThreshold ? RunAnimation : WalkAnimation);
         else
             PlayWithFacing(IdleAnimation);
+        
+        if (Math.Abs(hero.MaxHealth - _healthBar.Max) > 0.01f) _healthBar.Max = hero.MaxHealth;
+        if (Math.Abs(hero.Health - _healthBar.Current) > 0.01f) _healthBar.Current = hero.Health;
     }
 
     public void PlayCastAnimation(string animationName, FacingDirection facing)

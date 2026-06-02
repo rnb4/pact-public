@@ -1,42 +1,47 @@
+using System.Collections.Generic;
+using Arch.Core;
+using Pact.Server.Components;
 using Pact.Server.Operations;
-using Pact.Shared.State;
-using Pact.Shared.State.Entities;
 
 namespace Pact.Server.Systems;
 
 public class HomingProjectileSystem : ISystem
 {
-    private static EntityTable<IEntity> Entities => Game.Instance.State.Entities;
-
     public void Tick(double delta)
     {
-        foreach (var (id, e) in Entities.All())
+        var toDestroy = new List<Entity>();
+
+        var query = new QueryDescription().WithAll<HomingProjectile, Position, MetaData, HomingData>();
+        Game.Instance.World.Query(in query,
+            (Entity entity, ref Position position, ref MetaData metaData, ref HomingData homing) =>
+            {
+                homing = homing with { TimeRemaining = homing.TimeRemaining - delta };
+                if (homing.TimeRemaining <= 0) { toDestroy.Add(entity); return; }
+
+                if (!Game.Instance.World.IsAlive(homing.TargetId)) { toDestroy.Add(entity); return; }
+                ref var targetHealth = ref Game.Instance.World.Get<Pool<Health>>(homing.TargetId);
+                if (targetHealth.Current <= 0) { toDestroy.Add(entity); return; }
+
+                ref var targetPos = ref Game.Instance.World.Get<Position>(homing.TargetId);
+                var toTarget = targetPos.Value - position.Value;
+                var step = homing.Speed.UnitsToPixels() * (float)delta;
+                var radiusPx = homing.Radius.UnitsToPixels();
+                var distSq = toTarget.LengthSquared();
+
+                if (distSq <= step * step && distSq <= radiusPx * radiusPx)
+                {
+                    EffectOp.ApplyOnHitEffect(metaData.ModelId, homing.CasterId, homing.TargetId);
+                    toDestroy.Add(entity);
+                    return;
+                }
+
+                position.Value += toTarget.Normalized() * step;
+            });
+
+        foreach (var e in toDestroy)
         {
-            if (e is not HomingProjectileState entity) continue;
-            var projectile = entity;
-            projectile.TimeRemaining -= delta;
-            if (projectile.TimeRemaining <= 0) Entities.Free(id);
-            if (!Entities.TryGet(projectile.TargetId, out var hero)
-                || hero is not HeroState target
-                || !target.IsAlive())
-            {
-                Entities.Free(id);
-                continue;
-            }
-
-            var toTarget = target.Position - projectile.Position;
-            var step = projectile.Speed * (float)delta;
-            var distSq = toTarget.LengthSquared();
-            if (distSq <= step * step && distSq <= projectile.Radius * projectile.Radius)
-            {
-                EffectOp.ApplyEffect(projectile.ModelId, projectile.CasterId, ref target);
-                Entities.Set(target.EntityId, target);
-                Entities.Free(id);
-                continue;
-            }
-
-            projectile.Position += toTarget.Normalized() * step;
-            Entities.Set(id, projectile);
+            Game.Instance.EntityById.Remove(e.Id);
+            Game.Instance.World.Destroy(e);
         }
     }
 }

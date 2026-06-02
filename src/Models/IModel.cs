@@ -1,8 +1,6 @@
-using Godot;
-
 namespace Pact.Models;
 
 public interface IModel
 {
-    public StringName ModelId { get; set; }
+    public long ModelId { get; set; }
 }

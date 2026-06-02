@@ -1,12 +1,12 @@
+using Arch.Core;
 using Godot;
+using MemoryPack;
 
 namespace Pact.Shared.State.Entities;
 
-public interface IEntity
+public partial interface IEntity
 {
-    public EntityId EntityId { get; set; }
-    public string ModelId { get; set; }
-    public string Name { get; set; }
-    public Team Team { get; set; }
+    public int EntityId { get; set; }
+    public long ModelId { get; set; }
     public Vector2 Position { get; set; }
 }

@@ -1,6 +1,6 @@
 using Godot;
 using Pact.AutoLoad;
-using EntityId = Pact.Shared.State.EntityId;
+using Pact.Shared.State.Entities;
 
 namespace Pact.Client.Systems;
 
@@ -18,12 +18,12 @@ public partial class MobaCamera : Camera2D
     public override void _Process(double delta)
     {
         var localId = NetworkManager.Instance.LocalEntityId;
-        if (localId != EntityId.None)
+        if (localId != -1)
         {
             if (Input.IsActionJustPressed("camera_lock")) _lock = !_lock;
             if (Input.IsActionJustReleased("camera_center")) _lock = false;
             if (_lock || Input.IsActionPressed("camera_center"))
-                if (ClientRoot.Instance.GameState.Entities.TryGet(localId, out var hero))
+                if (ClientRoot.Instance.GameState.TryGet<HeroState>(localId, out var hero))
                 {
                     Position = hero.Position;
                     return;
