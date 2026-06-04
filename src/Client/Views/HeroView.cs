@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using Pact.Client.UI;
 using Pact.Shared.State.Entities;
 
 namespace Pact.Client.Views;
@@ -11,10 +12,12 @@ public partial class HeroView : View
     private bool _isCasting;
 
     private Vector2 _moveDelta;
-    private FancyProgressBar _healthBar = null!;
+    
+    [Export] private FancyProgressBar _healthBar = null!;
+    [Export] private FancyProgressBar _manaBar = null!;
     
     [Export] public float IdleThreshold = 0.5f;
-    [Export] public float RunThreshold = 64f;
+    [Export] public float RunThreshold = 2f;
 
     [ExportGroup("Animations")] 
     
@@ -29,7 +32,7 @@ public partial class HeroView : View
         var material = new ShaderMaterial();
         material.Shader = GD.Load<Shader>("res://assets/shaders/outline.gdshader");
         Sprite.Material = material;
-        _healthBar = GetNode<FancyProgressBar>("%HealthBar");
+        RunThreshold = RunThreshold.UnitsToPixels();
     }
 
     public override void _Process(double delta)
@@ -55,6 +58,9 @@ public partial class HeroView : View
         
         if (Math.Abs(hero.MaxHealth - _healthBar.Max) > 0.01f) _healthBar.Max = hero.MaxHealth;
         if (Math.Abs(hero.Health - _healthBar.Current) > 0.01f) _healthBar.Current = hero.Health;
+        
+        if (Math.Abs(hero.MaxMana - _manaBar.Max) > 0.01f) _manaBar.Max = hero.MaxMana;
+        if (Math.Abs(hero.Mana - _manaBar.Current) > 0.01f) _manaBar.Current = hero.Mana;
     }
 
     public void PlayCastAnimation(string animationName, FacingDirection facing)

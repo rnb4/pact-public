@@ -10,5 +10,4 @@ public abstract partial class TriggerModel : Resource
 {
     [Export] public required EffectModel Effect { get; set; }
     [Export] public ResourceCostModel? Cost { get; set; }
-    public abstract TriggerType TriggerType { get; }
 }

@@ -12,7 +12,7 @@ public class SpawnHandler : MessageHandler<SpawnMessage>
         switch (message.EntityType)
         {
             case EntityType.Hero:
-                ClientRoot.Instance.SpawnView<HeroModel>(message.SpawnedEntityId, message.ModelId, message.Position);
+                ClientRoot.Instance.SpawnView<HeroModel>(message.ModelId, message.SpawnedEntityId, message.Position);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

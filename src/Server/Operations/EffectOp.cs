@@ -1,53 +1,93 @@
+using System;
+using System.Linq;
 using Arch.Core;
 using Godot;
 using Pact.Models;
 using Pact.Models.Effects;
+using Pact.Models.Statuses;
 using Pact.Models.Triggers;
 using Pact.Server.Components;
+using Pact.Shared.State;
+using Pact.Server.Contexts;
+using Pact.Server.Domains;
+using Pact.Shared.Messages.Results;
 
 namespace Pact.Server.Operations;
 
 public static class EffectOp
 {
-    public static void ApplyOnHitEffect(long modelId, Entity caster, Entity target)
+    public static Result Apply(EffectModel effect, Context context) => effect switch
     {
-        if (!Game.Instance.Models.TryGet<ProjectileModel>(modelId, out var model)) return;
-        ApplyEffect(model.OnHitEffect, caster, target);
-    }
+        ApplyStatModifierEffectModel applyStatModifierEffectModel => ApplyStatModifierEffect(applyStatModifierEffectModel, context),
+        ApplyStatusEffectModel applyStatusEffectModel => ApplyStatusEffect(applyStatusEffectModel, context),
+        CompositeEffectModel compositeEffectModel => ApplyCompositeEffect(compositeEffectModel, context),
+        DamageEffectModel damageEffectModel => ApplyDamageEffect(damageEffectModel, context),
+        SpawnEffectModel spawnEffectModel => ApplySpawnEffect(spawnEffectModel, context),
+        _ => Result.NotImplemented,
+    };
 
-    public static void ApplyTrigger(ActivateTriggerModel trigger, Entity caster, Entity target)
+    private static Result ApplyDamageEffect(DamageEffectModel dmg, Context context)
     {
-        ApplyEffect(trigger.Effect, caster, target);
-    }
-
-    public static void ApplyTrigger(ActivateTriggerModel trigger, Entity caster, Vector2 position)
-    {
-    }
-
-    private static void ApplyEffect(EffectModel effect, Entity caster, Entity target)
-    {
-        switch (effect)
-        {
-            case DamageEffect dmg:
-                ApplyDamageEffect(dmg, caster, target);
-                break;
-            case SpawnEffect spawn:
-                ApplySpawnEffect(spawn, caster, target);
-                break;
-        }
-    }
-
-    private static void ApplyDamageEffect(DamageEffect dmg, Entity caster, Entity target)
-    {
-        ref var targetHealth = ref Game.Instance.World.Get<Pool<Health>>(target);
-        var damage = targetHealth.Deplete(dmg.Amount);
-        var casterMeta = Game.Instance.World.Get<MetaData>(caster);
-        var targetMeta = Game.Instance.World.Get<MetaData>(target);
+        if (!context.Target.IsEntity) return Result.InvalidTarget;
+        ref var health = ref Game.Instance.World.Get<Pool<Health>>(context.Target.Entity);
+        var damage = health.Deplete(dmg.Amount);
+        var casterMeta = Game.Instance.World.Get<MetaData>(context.Caster);
+        var targetMeta = Game.Instance.World.Get<MetaData>(context.Target.Entity);
         GD.Print($"{casterMeta.Name} did {damage} damage to {targetMeta.Name}");
+        return Result.Ok;
+    }
+    
+    private static Result ApplySpawnEffect(SpawnEffectModel spawn, Context context)
+    {
+        if (!Game.Instance.Models.TryGet<ProjectileModel>(spawn.Projectile.ModelId, out var model)) return Result.NotFound;
+        if (!context.Target.IsEntity) return Result.InvalidTarget;
+        SpawnOp.SpawnProjectile(model, context.Caster, context.Target.Entity);
+        return Result.Ok;
     }
 
-    private static void ApplySpawnEffect(SpawnEffect spawn, Entity caster, Entity target)
+    private static Result ApplyCompositeEffect(CompositeEffectModel composite, Context context)
     {
-        SpawnOp.SpawnProjectile(spawn.Projectile.ModelId, caster, target);
+        foreach (var effect in composite.Effects)
+            if (Apply(effect, context) is {} result && result != Result.Ok) return result;
+        return Result.Ok;
+    }
+    
+    private static Result ApplyStatusEffect(ApplyStatusEffectModel effect, Context context)
+    {
+        if (!context.Target.IsEntity) return Result.InvalidTarget;
+        ref var statuses = ref Game.Instance.World.Get<Statuses>(context.Target.Entity);
+        foreach (var activeStatus in statuses.Active.Where(activeStatus => activeStatus.Model.ModelId == effect.ModelId))
+        {
+            activeStatus.CurrentStacks += 1;
+            if (activeStatus.StackApplication == StackApplicationBehavior.RefreshDuration)
+                activeStatus.RemainingDuration = effect.Status.Duration;
+            return Result.Ok;
+        }
+        var status = new Status
+        {
+            Model = effect.Status,
+            StackTimeout = effect.Status.StackTimeout switch
+            {
+                RemoveNStacks removeNStacks => new RemoveNStackTimeoutBehavior(removeNStacks.Amount),
+                _ => new RemoveAllStackTimeoutBehavior(),
+            },
+            StackApplication = effect.Status.StackApplication,
+            MaxStacks = effect.Status.MaxStacks,
+        };
+        statuses.Active.Add(status);
+        TriggerOp.Fire<OnAddTriggerModel>(effect.Status.Ability, context);
+        return Result.Ok;
+    }
+
+    private static Result ApplyStatModifierEffect(ApplyStatModifierEffectModel effect, Context context)
+    {
+        if (!context.Target.IsEntity) return Result.InvalidTarget;
+        StatDomain.AddModifier(context.Target.Entity, new StatModifier
+        {
+            StatType = effect.StatType,
+            Operation = effect.Operation,
+            Value = effect.Value
+        }, context.Source);
+        return Result.Ok;
     }
 }

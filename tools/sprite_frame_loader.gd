@@ -4,9 +4,9 @@ extends EditorScript
 const DIRECTIONS := ["e", "se", "s", "sw", "w", "nw", "n", "ne"]
 const FRAME_SIZE := Vector2(128, 128)
 const FPS := 24
-const SPRITE_DIR := "res://assets/textures/characters/Longbow/"
+const SPRITE_DIR := "res://assets/textures/characters/Goblin/"
 const OUTPUT_PATH := "res://assets/sprite_frames/_frames.tres"
-const loops := ["walk", "idle", "idle2", "crouch_idle", "run", "strafe_right", "strafe_left", "crouch_run", "slide", "shield_block_mid"]
+const loops := ["walk", "idle", "idle2", "idle3", "idle4", "crouch_idle", "run", "strafe_right", "strafe_left", "crouch_run", "slide", "shield_block_mid"]
 
 func _run() -> void:
 	var sprite_frames := _build_sprite_frames()

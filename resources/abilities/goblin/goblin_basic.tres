@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="BasicAbilityModel" format=3 uid="uid://djm422fkm465x"]
+
+[ext_resource type="Script" uid="uid://d4gubp0m4e3hh" path="res://src/Models/Effects/DamageEffectModel.cs" id="1_cat7i"]
+[ext_resource type="Script" uid="uid://c1yw4uku4foxy" path="res://src/Models/Triggers/ActivateTriggerModel.cs" id="2_cfwub"]
+[ext_resource type="Script" uid="uid://b0f1i0j7osqsk" path="res://src/Models/BasicAbilityModel.cs" id="3_adbkl"]
+
+[sub_resource type="Resource" id="Resource_j4sdr"]
+script = ExtResource("1_cat7i")
+Amount = 20.0
+metadata/_custom_type_script = "uid://d4gubp0m4e3hh"
+
+[sub_resource type="Resource" id="Resource_angd1"]
+script = ExtResource("2_cfwub")
+AnimationName = "attack_1"
+FireFrame = 7
+Effect = SubResource("Resource_j4sdr")
+metadata/_custom_type_script = "uid://c1yw4uku4foxy"
+
+[resource]
+script = ExtResource("3_adbkl")
+PreCancelFrame = 7
+PostCancelFrame = 12
+Range = 1.0
+TargetType = 1
+Triggers = [SubResource("Resource_angd1")]
+metadata/_custom_type_script = "uid://b0f1i0j7osqsk"

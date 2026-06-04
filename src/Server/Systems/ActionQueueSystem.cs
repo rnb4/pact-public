@@ -13,7 +13,7 @@ public class ActionQueueSystem : ISystem
         foreach (var (entity, request) in ActionDomain.QueuedActions.ToList())
             if (request is MoveRequest moveRequest)
             {
-                if (AbilityDomain.Casts.Any(c => c.CasterId == entity)) continue;
+                if (CastDomain.Casts.Any(c => c.Context.Caster == entity)) continue;
                 if (!ActionDomain.CanMove(entity)) continue;
                 ActionDomain.QueuedActions.Remove(entity);
                 Game.Handle(moveRequest);

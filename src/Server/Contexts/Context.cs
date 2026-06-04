@@ -1,3 +1,11 @@
+using Arch.Core;
+
 namespace Pact.Server.Contexts;
 
-public abstract record Context(Source Source, Target Target);
+public record Context(
+    Entity Caster,
+    Target Target,
+    Source Source,
+    DamageInstance? Damage = null
+    );
+    

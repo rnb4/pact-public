@@ -7,11 +7,11 @@ public class CooldownSystem : ISystem
 {
     public void Tick(double delta)
     {
-        foreach (var key in AbilityDomain.Cooldowns.Keys.ToList())
+        foreach (var key in CooldownDomain.Cooldowns.Keys.ToList())
         {
-            AbilityDomain.Cooldowns[key] -= delta;
-            if (AbilityDomain.Cooldowns[key] <= 0)
-                AbilityDomain.Cooldowns.Remove(key);
+            CooldownDomain.Cooldowns[key] -= delta;
+            if (CooldownDomain.Cooldowns[key] <= 0)
+                CooldownDomain.Cooldowns.Remove(key);
         }
     }
 }

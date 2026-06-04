@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Godot;
 using Pact.Models;
 using Pact.Models.Statuses;
-using Model = Pact.Models.Model;
 
 namespace Pact.Server.Repos;
 
@@ -14,8 +13,7 @@ public class ModelRepo
     private readonly Dictionary<Type, object> _lookup;
     private readonly Dictionary<long, ProjectileModel> _projectiles = [];
     private readonly Dictionary<long, StatusModel> _statuses = [];
-
-    public IReadOnlyList<HeroModel> Heroes => [.. _heroes.Values];
+    public readonly Dictionary<string, HeroModel> Heroes = [];
 
     private ModelRepo()
     {
@@ -58,5 +56,7 @@ public class ModelRepo
     private void Register<T>(T model, Dictionary<long, T> registry) where T : Model
     {
         registry[model.ModelId] = model;
+        if (model is HeroModel hero)
+            Heroes.Add(hero.Name, hero);
     }
 }

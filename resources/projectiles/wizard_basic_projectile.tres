@@ -1,14 +1,14 @@
 [gd_resource type="Resource" script_class="ProjectileModel" format=3 uid="uid://lua6m6hw1xqh"]
 
 [ext_resource type="Script" uid="uid://bj2joluftf8do" path="res://src/Models/ProjectileModel.cs" id="1_6ogui"]
-[ext_resource type="Script" uid="uid://dv8csr6qq4dkl" path="res://src/Models/Effects/DamageEffect.cs" id="1_faxi2"]
+[ext_resource type="Script" uid="uid://d4gubp0m4e3hh" path="res://src/Models/Effects/DamageEffectModel.cs" id="1_faxi2"]
 [ext_resource type="PackedScene" uid="uid://de4p7rwenuafk" path="res://scenes/views/projectiles/bolt_view.tscn" id="2_tc2nc"]
 
 [sub_resource type="Resource" id="Resource_wkrcs"]
 script = ExtResource("1_faxi2")
 DamageType = 1
 Amount = 30.0
-metadata/_custom_type_script = "uid://dv8csr6qq4dkl"
+metadata/_custom_type_script = "uid://d4gubp0m4e3hh"
 
 [resource]
 script = ExtResource("1_6ogui")

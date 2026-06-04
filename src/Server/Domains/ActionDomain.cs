@@ -11,33 +11,33 @@ public static class ActionDomain
 {
     public static readonly Dictionary<Entity, IRequest> QueuedActions = [];
 
-    public static bool CanMove(Entity casterId)
+    public static bool CanMove(Entity caster)
     {
-        if (IsBasicAttackLocked(casterId)) return false;
-        if (AbilityDomain.IsCasting(casterId)) return false;
+        if (IsBasicAttackLocked(caster)) return false;
+        if (CastDomain.IsCasting(caster)) return false;
         return true;
     }
 
-    public static bool CanCast(Entity casterId, AbilitySlot slot)
+    public static bool CanCast(Entity caster, AbilitySlot slot)
     {
-        if (AbilityDomain.IsOnCooldown(casterId, slot)) return false;
-        if (AbilityDomain.IsCasting(casterId)) return false;
+        if (CooldownDomain.IsOnCooldown(caster, slot)) return false;
+        if (CastDomain.IsCasting(caster)) return false;
         return true;
     }
 
-    public static bool CanCancelBasic(Entity casterId)
+    public static bool CanCancelBasic(Entity caster)
     {
-        return AbilityDomain.Casts.Any(c => c.CasterId == casterId && c.Slot == AbilitySlot.Basic) &&
-               !IsBasicAttackLocked(casterId);
+        return CastDomain.Casts.Any(c => c.Context.Caster == caster && c.Slot == AbilitySlot.Basic) &&
+               !IsBasicAttackLocked(caster);
     }
 
-    public static bool IsBasicAttackLocked(Entity casterId)
+    public static bool IsBasicAttackLocked(Entity caster)
     {
-        foreach (var cast in AbilityDomain.Casts)
+        foreach (var cast in CastDomain.Casts)
         {
-            if (cast.CasterId != casterId) continue;
+            if (cast.Context.Caster != caster) continue;
             if (cast.AbilityModel is not BasicAbilityModel basic) continue;
-            var frame = AbilityDomain.CurrentFrame(cast);
+            var frame = CastDomain.CurrentFrame(cast);
             if (frame >= basic.PreCancelFrame && frame <= basic.PostCancelFrame) return true;
         }
 

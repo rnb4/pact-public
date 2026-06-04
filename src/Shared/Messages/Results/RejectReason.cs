@@ -4,8 +4,7 @@ public enum RejectReason
 {
     None = 0,
     Unauthorized,
-    HeroNotFound,
-    AbilityNotFound,
+    NotFound,
     IsDead,
     CannotAct,
     OnCooldown,

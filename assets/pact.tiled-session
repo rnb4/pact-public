@@ -1,22 +1,22 @@
 {
     "activeFile": "maps/map_01.tmx",
     "expandedProjectPaths": [
+        ".",
         "maps",
-        "tilesets",
-        "."
+        "tilesets"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "maps/map_01.tmx": {
             "expandedGroupLayers": [
-                5,
-                3
+                3,
+                5
             ],
             "scale": 0.5,
-            "selectedLayer": 2,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 1954,
-                "y": 1056
+                "x": 2216,
+                "y": 1098
             }
         },
         "tilesets/ground.tsx": {
@@ -46,9 +46,9 @@
     ],
     "project": "pact.tiled-project",
     "recentFiles": [
-        "tilesets/trees.tsx",
         "tilesets/ground.tsx",
         "tilesets/mask.tsx",
+        "tilesets/trees.tsx",
         "maps/map_01.tmx"
     ]
 }

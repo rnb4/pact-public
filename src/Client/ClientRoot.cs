@@ -36,6 +36,7 @@ public partial class ClientRoot : Node2D
     private InputManager _input = null!;
 
     private Node2D _viewsContainer = null!;
+    public CanvasLayer OverheadUI = null!;
     public static ClientRoot Instance { get; private set; } = null!;
     private static NetworkManager NetworkManager => NetworkManager.Instance;
 
@@ -52,6 +53,9 @@ public partial class ClientRoot : Node2D
         _viewsContainer = new Node2D { YSortEnabled = true };
         AddChild(_viewsContainer);
 
+        OverheadUI = new CanvasLayer();
+        AddChild(OverheadUI);
+
         _camera = GetNode<MobaCamera>("%MobaCamera");
 
         NetworkManager.SnapshotReceived += ApplySnapshot;
@@ -65,14 +69,14 @@ public partial class ClientRoot : Node2D
         {
             switch (e)
             {
-                case HeroState h: SpawnView<HeroModel>(h.EntityId, h.ModelId, e.Position); break;
-                case HomingProjectileState p: SpawnView<ProjectileModel>(p.EntityId, p.ModelId, e.Position); break;
+                case HeroState h: SpawnView<HeroModel>(h.ModelId, h.EntityId, e.Position); break;
+                case HomingProjectileState p: SpawnView<ProjectileModel>(p.ModelId, p.EntityId, e.Position); break;
             }
         }
         foreach (var e in removed) DespawnView(e.EntityId);
     }
 
-    public void SpawnView<T>(int id, long modelId, Vector2 position) where T : Model, IHasView
+    public void SpawnView<T>(long modelId, int id, Vector2 position) where T : Model, IHasView
     {
         if (!_models.TryGet<T>(modelId, out var model) || model.ViewScene == null) return;
         var view = model.ViewScene.Instantiate<View>();

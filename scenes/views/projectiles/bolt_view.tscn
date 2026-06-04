@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://de4p7rwenuafk"]
 
-[ext_resource type="PackedScene" uid="uid://umxs4ragyqu3" path="res://scenes/views/projectiles/projectile_view.tscn" id="1_j8jmo"]
+[ext_resource type="PackedScene" uid="uid://umxs4ragyqu3" path="res://scenes/views/projectile_view.tscn" id="1_j8jmo"]
 [ext_resource type="SpriteFrames" uid="uid://dbj5jsuppjrj5" path="res://assets/sprite_frames/effects/bolt_frames.tres" id="2_4eahn"]
 
 [sub_resource type="Gradient" id="Gradient_j8jmo"]

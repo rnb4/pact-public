@@ -5,19 +5,19 @@ using Pact.Server.Components;
 using Pact.Server.Contexts;
 using Pact.Server.Domains;
 using Pact.Server.Operations;
+using Pact.Shared.Messages.Requests;
 using Pact.Shared.Messages.Results;
 using Pact.Shared.State;
-using AbilityRequest = Pact.Shared.Messages.Requests.AbilityRequest;
 
 namespace Pact.Server.Handlers;
 
-public class AbilityHandler : IRequestHandler<AbilityRequest>
+public class AbilityHandler : IRequestHandler<CastRequest>
 {
     private static readonly float RangeAdjustment = 2f.UnitsToPixels();
     private static readonly float RepathThreshold = 0.5f.UnitsToPixels();
     private static Game Game => Game.Instance;
 
-    public Result Handle(AbilityRequest request)
+    public Result Handle(CastRequest request)
     {
         if (HandlerGuards.ValidateRequester(request, out var caster) is { IsValid: false } casterResult)
             return casterResult;
@@ -31,26 +31,15 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
 
         ref var position = ref Game.World.Get<Position>(caster);
 
-        var targetPos = target switch
-        {
-            EntityTarget { Entity: var e } => Game.World.Get<Position>(e).Value,
-            GroundTarget { Position: var p } => p,
-            _ => throw new UnreachableException()
-        };
-
         var range = abilityModel.Range.UnitsToPixels();
-        var inRange = position.Value.DistanceTo(targetPos) <= range;
+        var inRange = position.Value.DistanceTo(target.Position) <= range;
 
         if (inRange)
         {
             if (ActionDomain.CanCast(caster, request.Slot))
             {
-                ref var lookDir = ref Game.World.Get<LookDirection>(caster);
-                lookDir = new LookDirection(position.Value.DirectionTo(targetPos));
-                PathfinderOp.Stop(caster);
-                AbilityDomain.Cast(caster, request.Slot, target, abilityModel, Game,
-                    lookDir.Value.ToFacingDirection());
-
+                var context = new Context(caster, target, new Source(caster.Id, request.Slot, 0));
+                CastDomain.Cast(context, request.Slot, abilityModel);
                 if (request.Slot == AbilitySlot.Basic)
                     ActionDomain.QueuedActions[caster] = request;
                 else
@@ -63,24 +52,21 @@ public class AbilityHandler : IRequestHandler<AbilityRequest>
         }
         else
         {
-            var toTarget = position.Value.DirectionTo(targetPos);
-            var stopPoint = targetPos - toTarget * (range - RangeAdjustment);
+            var toTarget = position.Value.DirectionTo(target.Position);
+            var stopPoint = target.Position - toTarget * (range - RangeAdjustment);
 
-            if (!AbilityDomain.IsCasting(caster))
-                switch (target)
+            if (!CastDomain.IsCasting(caster))
+                if (target.IsEntity)
                 {
-                    case EntityTarget:
-                    {
-                        ref var pathMove = ref Game.World.Get<PathMove>(caster);
-                        var pathDone = pathMove.Path.Length == 0 || pathMove.PathIndex >= pathMove.Path.Length;
-                        var needsPath = pathDone || pathMove.Path.Last().DistanceTo(stopPoint) >= RepathThreshold;
-                        if (needsPath)
-                            PathfinderOp.RequestPath(caster, stopPoint);
-                        break;
-                    }
-                    case GroundTarget:
+                    ref var pathMove = ref Game.World.Get<PathMove>(caster);
+                    var pathDone = pathMove.Path.Length == 0 || pathMove.PathIndex >= pathMove.Path.Length;
+                    var needsPath = pathDone || pathMove.Path.Last().DistanceTo(stopPoint) >= RepathThreshold;
+                    if (needsPath)
                         PathfinderOp.RequestPath(caster, stopPoint);
-                        break;
+                }
+                else
+                {
+                    PathfinderOp.RequestPath(caster, stopPoint);
                 }
 
             ActionDomain.QueuedActions[caster] = request;

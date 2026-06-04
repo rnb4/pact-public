@@ -4,7 +4,7 @@ namespace Pact.Shared.Messages.Requests;
 
 [MemoryPackable]
 [MemoryPackUnion(0, typeof(MoveRequest))]
-[MemoryPackUnion(1, typeof(AbilityRequest))]
+[MemoryPackUnion(1, typeof(CastRequest))]
 [MemoryPackUnion(2, typeof(BuyItemRequest))]
 [MemoryPackUnion(3, typeof(SellItemRequest))]
 [MemoryPackUnion(4, typeof(StopRequest))]

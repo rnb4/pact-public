@@ -9,6 +9,9 @@ script = ExtResource("1_g724g")
 [node name="MobaCamera" type="Camera2D" parent="." unique_id=241281035]
 unique_name_in_owner = true
 position = Vector2(960, 540)
+zoom = Vector2(2, 2)
 position_smoothing_enabled = true
 script = ExtResource("2_1wvkc")
+ZoomMin = 2.0
+ZoomMax = 4.0
 metadata/_custom_type_script = "uid://j2bikw015p4u"

@@ -1,4 +1,5 @@
+using Pact.Shared.State;
+
 namespace Pact.Server.Contexts;
 
-// identity only
-public record struct Source(int CasterId, int AbilityIndex, int EffectIndex);
+public record struct Source(int CasterId, AbilitySlot AbilityIndex, int EffectIndex);

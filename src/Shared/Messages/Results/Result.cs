@@ -4,8 +4,7 @@ public class Result
 {
     public static readonly Result Ok = new(RejectReason.None);
     public static readonly Result Unauthorized = new(RejectReason.Unauthorized);
-    public static readonly Result HeroNotFound = new(RejectReason.HeroNotFound);
-    public static readonly Result AbilityNotFound = new(RejectReason.AbilityNotFound);
+    public static readonly Result NotFound = new(RejectReason.NotFound);
     public static readonly Result IsDead = new(RejectReason.IsDead);
     public static readonly Result CannotAct = new(RejectReason.CannotAct);
     public static readonly Result OnCooldown = new(RejectReason.OnCooldown);

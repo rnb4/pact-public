@@ -4,6 +4,4 @@ using Resource = Godot.Resource;
 namespace Pact.Models.ResourceCosts;
 
 [GlobalClass]
-public abstract partial class ResourceCostModel : Resource
-{
-}
+public abstract partial class ResourceCostModel : Resource;

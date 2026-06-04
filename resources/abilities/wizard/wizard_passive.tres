@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AbilityModel" format=3 uid="uid://yjuyfph1wyk2"]
+
+[ext_resource type="Script" uid="uid://ca4d3x2placqx" path="res://src/Models/AbilityModel.cs" id="1_54ikb"]
+[ext_resource type="Script" uid="uid://40iwkbbnt538" path="res://src/Models/Effects/ApplyStatModifierEffectModel.cs" id="1_a500i"]
+[ext_resource type="Script" uid="uid://m11quyjxn7nv" path="res://src/Models/Triggers/OnAddTriggerModel.cs" id="2_a500i"]
+
+[sub_resource type="Resource" id="Resource_0sg0v"]
+script = ExtResource("1_a500i")
+Value = 10.0
+metadata/_custom_type_script = "uid://40iwkbbnt538"
+
+[sub_resource type="Resource" id="Resource_52b6v"]
+script = ExtResource("2_a500i")
+Effect = SubResource("Resource_0sg0v")
+metadata/_custom_type_script = "uid://m11quyjxn7nv"
+
+[resource]
+script = ExtResource("1_54ikb")
+Triggers = [SubResource("Resource_52b6v")]
+metadata/_custom_type_script = "uid://ca4d3x2placqx"

@@ -3,7 +3,6 @@ using Pact.AutoLoad;
 using Pact.Client.Views;
 using Pact.Shared.Messages.Requests;
 using Pact.Shared.State.Entities;
-using AbilityRequest = Pact.Shared.Messages.Requests.AbilityRequest;
 using AbilitySlot = Pact.Shared.State.AbilitySlot;
 
 namespace Pact.Client.Systems;
@@ -35,7 +34,7 @@ public partial class InputManager : Node2D
 
         if (Input.IsActionJustPressed("basic_attack") && _hoveredHero != null && _hoveredHero.Id != localEntityId)
         {
-            NetworkManager.Instance.SendRequest(new AbilityRequest
+            NetworkManager.Instance.SendRequest(new CastRequest
             {
                 EntityId = localEntityId,
                 Slot = AbilitySlot.Basic,
@@ -62,7 +61,7 @@ public partial class InputManager : Node2D
 
         if (!slot.HasValue) return;
 
-        NetworkManager.Instance.SendRequest(new AbilityRequest
+        NetworkManager.Instance.SendRequest(new CastRequest
         {
             EntityId = localEntityId,
             Slot = slot.Value

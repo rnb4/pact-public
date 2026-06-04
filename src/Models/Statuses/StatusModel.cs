@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using Godot;
-using Pact.Models.Effects;
 using Pact.Models.Triggers;
 using Pact.Server.Contexts;
 
@@ -13,7 +13,7 @@ public partial class StatusModel : Model
     [Export] public required AbilityModel Ability { get; set; }
     [Export] public required Texture2D Icon { get; set; }
     
-    [ExportGroup("Stacks")] [Export] public float MaxStacks { get; set; } = 1f;
+    [ExportGroup("Stacks")] [Export] public int MaxStacks { get; set; } = 1;
 
     [Export] public required StackTimeoutBehaviorModel StackTimeout { get; set; }
     [Export] public StackApplicationBehavior StackApplication { get; set; }
@@ -21,14 +21,13 @@ public partial class StatusModel : Model
 
 public class Status
 {
-    public required Source Source { get; init; }
+    public required StatusModel Model { get; init; }
     public required StackTimeoutBehavior StackTimeout { get; init; }
     public required StackApplicationBehavior StackApplication { get; init; }
     public int MaxStacks { get; init; }
-    public StatusStack[] CurrentStacks { get; init; } = [];
+    public float RemainingDuration { get; set; }
+    public int CurrentStacks { get; set; } = 1;
 }
-
-public record StatusStack(Source Source, int Value);
 
 public enum StackApplicationBehavior
 {

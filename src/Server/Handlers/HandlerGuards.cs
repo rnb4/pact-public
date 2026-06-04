@@ -20,23 +20,23 @@ public static class HandlerGuards
         return Result.Ok;
     }
 
-    public static Result ValidateTarget(AbilityRequest request, out Target target)
+    public static Result ValidateTarget(CastRequest request, out Target target)
     {
-        target = null!;
+        target = default;
 
         if (request.TargetEntityId is { } targetId)
         {
-            if (!Game.Instance.EntityById.TryGetValue(targetId, out var targetEntity)) return Result.HeroNotFound;
-            if (!Game.Instance.World.IsAlive(targetEntity)) return Result.HeroNotFound;
+            if (!Game.Instance.EntityById.TryGetValue(targetId, out var targetEntity)) return Result.NotFound;
+            if (!Game.Instance.World.IsAlive(targetEntity)) return Result.NotFound;
             ref var health = ref Game.Instance.World.Get<Pool<Health>>(targetEntity);
             if (health.Current <= 0) return Result.IsDead;
-            target = new EntityTarget(targetEntity);
+            target = targetEntity;
             return Result.Ok;
         }
 
         if (request.TargetPosition is { } position)
         {
-            target = new GroundTarget(position);
+            target = position;
             return Result.Ok;
         }
 
@@ -46,7 +46,7 @@ public static class HandlerGuards
     public static Result ValidateHeroModel(Entity caster, out HeroModel model)
     {
         var metaData = Game.Instance.World.Get<MetaData>(caster);
-        if (!Game.Instance.Models.TryGet(metaData.ModelId, out model)) return Result.HeroNotFound;
+        if (!Game.Instance.Models.TryGet(metaData.ModelId, out model)) return Result.NotFound;
         return Result.Ok;
     }
 
@@ -54,7 +54,7 @@ public static class HandlerGuards
     {
         abilityModel = null!;
         var ability = AbilityDomain.GetAbility(heroModel, slot);
-        if (ability is null) return Result.AbilityNotFound;
+        if (ability is null) return Result.NotFound;
         abilityModel = ability;
         return Result.Ok;
     }

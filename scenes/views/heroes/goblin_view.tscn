@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://cyi66f537q4dx"]
+
+[ext_resource type="PackedScene" uid="uid://s5ljb5jwf0aj" path="res://scenes/views/hero_view.tscn" id="1_ba8c3"]
+[ext_resource type="SpriteFrames" uid="uid://crkx3wqb2xu0a" path="res://assets/sprite_frames/heroes/goblin_frames.tres" id="2_l1tue"]
+
+[node name="GoblinView" unique_id=625931354 instance=ExtResource("1_ba8c3")]
+
+[node name="AnimatedSprite2D" parent="." index="0" unique_id=964990145]
+sprite_frames = ExtResource("2_l1tue")
+animation = &"idle_s"
+autoplay = "idle_s"
+
+[editable path="OverheadHeroUI"]

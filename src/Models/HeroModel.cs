@@ -7,15 +7,18 @@ namespace Pact.Models;
 public partial class HeroModel : Model, IHasView
 {
     [Export] public string Name { get; set; } = "Unnamed Hero";
+    [Export] public PackedScene? ViewScene { get; set; }
 
-    [ExportGroup("Abilities")] [Export] public HeroAbilityModel? PassiveAbility { get; set; }
-
+    [ExportGroup("Abilities")] 
+    
+    [Export] public AbilityModel? PassiveAbility { get; set; }
     [Export] public BasicAbilityModel? BasicAttack { get; set; }
-    [Export] public HeroAbilityModel? Primary { get; set; }
-    [Export] public HeroAbilityModel? Secondary { get; set; }
-    [Export] public HeroAbilityModel? Tertiary { get; set; }
-    [Export] public HeroAbilityModel? Ultimate { get; set; }
+    [Export] public RankedAbilityModel? Primary { get; set; }
+    [Export] public RankedAbilityModel? Secondary { get; set; }
+    [Export] public RankedAbilityModel? Tertiary { get; set; }
+    [Export] public RankedAbilityModel? Ultimate { get; set; }
 
+    
     [ExportGroup("Base Stats")] 
     
     [Export] public float MaxHealth { get; set; } = 500f;
@@ -40,5 +43,4 @@ public partial class HeroModel : Model, IHasView
     [Export] public float ArmorGrowth { get; set; } = 1f;
     [Export] public float MagicResistGrowth { get; set; } = 1f;
     [Export] public float VisionRangeGrowth { get; set; }
-    [Export] public PackedScene? ViewScene { get; set; }
 }

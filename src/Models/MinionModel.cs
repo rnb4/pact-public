@@ -5,7 +5,7 @@ namespace Pact.Models;
 [GlobalClass]
 public partial class MinionModel : Resource
 {
-    [Export] public required HeroAbilityModel BasicAttack { get; set; }
+    [Export] public required RankedAbilityModel BasicAttack { get; set; }
     [Export] public int GoldValue { get; set; } = 10;
     [Export] public float ExperienceValue { get; set; } = 10;
     [Export] public float LeashRange { get; set; } = 3f;

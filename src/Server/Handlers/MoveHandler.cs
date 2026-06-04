@@ -16,7 +16,7 @@ public class MoveHandler : IRequestHandler<MoveRequest>
 
         if (ActionDomain.CanCancelBasic(caster))
         {
-            AbilityDomain.CancelBasic(caster);
+            CastDomain.CancelBasic(caster);
             NetworkManager.Instance.BroadcastServerMessage(new CastCancelServerMessage { CasterId = caster.Id });
         }
         else if (!ActionDomain.CanMove(caster))

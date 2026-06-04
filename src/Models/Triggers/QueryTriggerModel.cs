@@ -8,6 +8,5 @@ namespace Pact.Models.Triggers;
 [GlobalClass]
 public abstract partial class QueryTriggerModel : TriggerModel
 {
-    public override TriggerType TriggerType { get; } = TriggerType.OnQuery;
     public required Func<Context, bool> Predicate { get; set; }
 }

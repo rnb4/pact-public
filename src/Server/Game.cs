@@ -28,7 +28,6 @@ public class Game
     public readonly PlayerRepo Players = new();
 
     // Repos
-    // public GameState State = new();
     public readonly World World = World.Create();
     public readonly Dictionary<int, Entity> EntityById = [];
     public uint CurrentTick = 0;
@@ -57,9 +56,11 @@ public class Game
             [
                 new HomingProjectileSystem(),
                 new MovementSystem(),
-                new AbilityCastSystem(),
+                new CastSystem(),
                 new ActionQueueSystem(),
-                new CooldownSystem()
+                new CooldownSystem(),
+                new StatusSystem(),
+                new ResourceRegenSystem(),
             ],
             Multiplayer = multiplayer,
             NavMap = map.NavigationRegion2D.GetNavigationMap()
@@ -77,8 +78,8 @@ public class Game
         foreach (var peer in Multiplayer.GetPeers())
         {
             var heroes = new List<HeroState>();
-            var heroQuery = new QueryDescription().WithAll<Hero, Position, Pool<Health>, Pool<Mana>, MetaData, LookDirection>();
-            World.Query(in heroQuery, (Entity entity, ref Position position, ref Pool<Health> health, ref Pool<Mana> mana, ref MetaData meta, ref LookDirection lookDirection) =>
+            var heroQuery = new QueryDescription().WithAll<Hero, Position, Pool<Health>, Pool<Mana>, MetaData, LookDirection, PathMove>();
+            World.Query(in heroQuery, (Entity entity, ref Position position, ref Pool<Health> health, ref Pool<Mana> mana, ref MetaData meta, ref LookDirection lookDirection, ref PathMove pathMove) =>
             {
                 heroes.Add(new HeroState
                 {
@@ -91,6 +92,7 @@ public class Game
                     Mana = mana.Current,
                     MaxMana = mana.Max,
                     LookDirection = lookDirection.Value,
+                    MoveDirection = pathMove.MoveDirection,
                 });
             });
 
@@ -119,7 +121,7 @@ public class Game
     {
         var result = request switch
         {
-            AbilityRequest r => _abilityHandler.Handle(r),
+            CastRequest r => _abilityHandler.Handle(r),
             MoveRequest r => _moveHandler.Handle(r),
             CursorUpdateRequest r => _cursorUpdateHandler.Handle(r),
             _ => Result.NotImplemented
@@ -131,9 +133,7 @@ public class Game
 
     public void OnPeerConnected(long peerId)
     {
-        var heroes = Models.Heroes;
-        if (heroes.Count == 0) return;
-        var model = heroes[_peerNum++ % heroes.Count];
+        if (!Models.Heroes.TryGetValue(_peerNum++ % 2 != 0 ? "Goblin" : "Wizard", out var model)) return;
         var hero = SpawnOp.SpawnHero(peerId, model, new Vector2(1000, 1000));
         GD.Print("OnPeerConnected: " + hero);
         NetworkManager.Instance.SendServerMessage((int)peerId, new NotifyLocalIdMessage

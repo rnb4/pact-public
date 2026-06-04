@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="HeroModel" format=3 uid="uid://bl7nhxqk4uiak"]
+
+[ext_resource type="Script" uid="uid://wh8k0hm5nybe" path="res://src/Models/HeroModel.cs" id="1_8ierc"]
+[ext_resource type="Resource" uid="uid://djm422fkm465x" path="res://resources/abilities/goblin/goblin_basic.tres" id="1_h7aqh"]
+[ext_resource type="PackedScene" uid="uid://cyi66f537q4dx" path="res://scenes/views/heroes/goblin_view.tscn" id="2_7syxk"]
+
+[resource]
+script = ExtResource("1_8ierc")
+Name = "Goblin"
+ViewScene = ExtResource("2_7syxk")
+BasicAttack = ExtResource("1_h7aqh")
+MoveSpeed = 2.5
+metadata/_custom_type_script = "uid://wh8k0hm5nybe"
