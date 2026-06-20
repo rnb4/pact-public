@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://dstatus0icon2"]
+
+[ext_resource type="Script" uid="uid://1maxut8inc2h" path="res://src/Client/UI/StatusIcon.cs" id="1_sticn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+bg_color = Color(0, 0, 0, 0.5019608)
+
+[sub_resource type="LabelSettings" id="LabelSettings_0vdj7"]
+font_size = 8
+
+[node name="StatusIcon" type="TextureRect" unique_id=1947826301 node_paths=PackedStringArray("_duration", "_stacks")]
+custom_minimum_size = Vector2(16, 16)
+offset_right = 16.0
+offset_bottom = 16.0
+expand_mode = 1
+script = ExtResource("1_sticn")
+_duration = NodePath("ProgressBar")
+_stacks = NodePath("StackLabel")
+
+[node name="ProgressBar" type="ProgressBar" parent="." unique_id=1849961956]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
+value = 100.0
+fill_mode = 3
+show_percentage = false
+
+[node name="StackLabel" type="Label" parent="." unique_id=647514384]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "2"
+label_settings = SubResource("LabelSettings_0vdj7")
+horizontal_alignment = 2
+vertical_alignment = 2

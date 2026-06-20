@@ -58,7 +58,7 @@ public static class StatDomain
         {
             ref var statuses = ref world.Get<Statuses>(entity);
             foreach (var status in statuses.Active)
-                CollectQueryModifiers(status.Model.Ability.Triggers, statType, context, instantMods);
+                CollectQueryModifiers(status.Model.Triggers, statType, context, instantMods);
         }
 
         return ApplyModifiers(cached, instantMods);

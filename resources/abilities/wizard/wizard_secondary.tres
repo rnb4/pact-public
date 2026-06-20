@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="RankedAbilityModel" format=3 uid="uid://cei6xaiv7jft4"]
+
+[ext_resource type="Script" uid="uid://2kcouvvajeej" path="res://src/Models/ResourceCosts/ManaCost.cs" id="1_55rhr"]
+[ext_resource type="Script" uid="uid://dthcc7svgfs8a" path="res://src/Models/RankedAbilityModel.cs" id="1_th5fo"]
+[ext_resource type="Resource" uid="uid://m8p5eqbbpige" path="res://resources/projectiles/wizard_fireball_projectile.tres" id="2_542re"]
+[ext_resource type="Script" uid="uid://ikljc52nllxo" path="res://src/Models/Effects/SpawnEffectModel.cs" id="5_331sv"]
+[ext_resource type="Script" uid="uid://c1yw4uku4foxy" path="res://src/Models/Triggers/ActivateTriggerModel.cs" id="6_068ma"]
+[ext_resource type="Script" uid="uid://ca4d3x2placqx" path="res://src/Models/AbilityModel.cs" id="7_178e6"]
+
+[sub_resource type="Resource" id="Resource_kggi7"]
+script = ExtResource("1_55rhr")
+Cost = 10.0
+metadata/_custom_type_script = "uid://2kcouvvajeej"
+
+[sub_resource type="Resource" id="Resource_s1mhy"]
+script = ExtResource("5_331sv")
+Projectile = ExtResource("2_542re")
+metadata/_custom_type_script = "uid://ikljc52nllxo"
+
+[sub_resource type="Resource" id="Resource_qmmx6"]
+script = ExtResource("6_068ma")
+AnimationName = "attack_1"
+FireFrame = 7
+Effect = SubResource("Resource_s1mhy")
+Cost = SubResource("Resource_kggi7")
+metadata/_custom_type_script = "uid://c1yw4uku4foxy"
+
+[sub_resource type="Resource" id="Resource_y0ewi"]
+script = ExtResource("7_178e6")
+Triggers = [SubResource("Resource_qmmx6")]
+metadata/_custom_type_script = "uid://ca4d3x2placqx"
+
+[resource]
+script = ExtResource("1_th5fo")
+Ranks = [SubResource("Resource_y0ewi")]
+metadata/_custom_type_script = "uid://dthcc7svgfs8a"

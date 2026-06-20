@@ -2,19 +2,32 @@
 
 [ext_resource type="Script" uid="uid://bj2joluftf8do" path="res://src/Models/ProjectileModel.cs" id="1_6ogui"]
 [ext_resource type="Script" uid="uid://d4gubp0m4e3hh" path="res://src/Models/Effects/DamageEffectModel.cs" id="1_faxi2"]
+[ext_resource type="Resource" uid="uid://o4tlp86cs316" path="res://resources/statuses/burn_status.tres" id="2_7fq7j"]
 [ext_resource type="PackedScene" uid="uid://de4p7rwenuafk" path="res://scenes/views/projectiles/bolt_view.tscn" id="2_tc2nc"]
+[ext_resource type="Script" uid="uid://bmwxj1s5yaet3" path="res://src/Models/Effects/ApplyStatusEffectModel.cs" id="3_po2yo"]
+[ext_resource type="Script" uid="uid://clto0iqjjaxya" path="res://src/Models/Effects/CompositeEffectModel.cs" id="4_fk5h0"]
 
-[sub_resource type="Resource" id="Resource_wkrcs"]
+[sub_resource type="Resource" id="Resource_741k0"]
 script = ExtResource("1_faxi2")
 DamageType = 1
 Amount = 30.0
 metadata/_custom_type_script = "uid://d4gubp0m4e3hh"
+
+[sub_resource type="Resource" id="Resource_uoigs"]
+script = ExtResource("3_po2yo")
+Status = ExtResource("2_7fq7j")
+metadata/_custom_type_script = "uid://bmwxj1s5yaet3"
+
+[sub_resource type="Resource" id="Resource_e3aj6"]
+script = ExtResource("4_fk5h0")
+Effects = [SubResource("Resource_741k0"), SubResource("Resource_uoigs")]
+metadata/_custom_type_script = "uid://clto0iqjjaxya"
 
 [resource]
 script = ExtResource("1_6ogui")
 Speed = 6.0
 Lifetime = 99.0
 Radius = 0.5
-OnHitEffect = SubResource("Resource_wkrcs")
+OnHitEffect = SubResource("Resource_e3aj6")
 ViewScene = ExtResource("2_tc2nc")
 metadata/_custom_type_script = "uid://bj2joluftf8do"

@@ -4,17 +4,23 @@
 [ext_resource type="Resource" uid="uid://lua6m6hw1xqh" path="res://resources/projectiles/wizard_basic_projectile.tres" id="1_6jctn"]
 [ext_resource type="Script" uid="uid://c1yw4uku4foxy" path="res://src/Models/Triggers/ActivateTriggerModel.cs" id="2_6jctn"]
 [ext_resource type="Script" uid="uid://ikljc52nllxo" path="res://src/Models/Effects/SpawnEffectModel.cs" id="2_wkrcs"]
+[ext_resource type="Script" uid="uid://clto0iqjjaxya" path="res://src/Models/Effects/CompositeEffectModel.cs" id="3_wkrcs"]
 
 [sub_resource type="Resource" id="Resource_eh6kx"]
 script = ExtResource("2_wkrcs")
 Projectile = ExtResource("1_6jctn")
 metadata/_custom_type_script = "uid://ikljc52nllxo"
 
+[sub_resource type="Resource" id="Resource_4ebgp"]
+script = ExtResource("3_wkrcs")
+Effects = [SubResource("Resource_eh6kx")]
+metadata/_custom_type_script = "uid://clto0iqjjaxya"
+
 [sub_resource type="Resource" id="Resource_gq05b"]
 script = ExtResource("2_6jctn")
 AnimationName = "attack_1"
 FireFrame = 7
-Effect = SubResource("Resource_eh6kx")
+Effect = SubResource("Resource_4ebgp")
 metadata/_custom_type_script = "uid://c1yw4uku4foxy"
 
 [resource]

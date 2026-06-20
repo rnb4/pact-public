@@ -3,6 +3,7 @@
 [ext_resource type="Resource" uid="uid://dikvj5n3ub36l" path="res://resources/abilities/wizard/wizard_basic.tres" id="1_yu340"]
 [ext_resource type="Resource" uid="uid://yjuyfph1wyk2" path="res://resources/abilities/wizard/wizard_passive.tres" id="2_us8c4"]
 [ext_resource type="Script" uid="uid://wh8k0hm5nybe" path="res://src/Models/HeroModel.cs" id="2_yu340"]
+[ext_resource type="Resource" uid="uid://cei6xaiv7jft4" path="res://resources/abilities/wizard/wizard_secondary.tres" id="3_l5xlg"]
 [ext_resource type="PackedScene" uid="uid://uj8i3y3vt70p" path="res://scenes/views/heroes/wizard_view.tscn" id="3_us8c4"]
 
 [resource]
@@ -11,5 +12,6 @@ Name = "Wizard"
 ViewScene = ExtResource("3_us8c4")
 PassiveAbility = ExtResource("2_us8c4")
 BasicAttack = ExtResource("1_yu340")
+Secondary = ExtResource("3_l5xlg")
 MoveSpeed = 2.0
 metadata/_custom_type_script = "uid://wh8k0hm5nybe"

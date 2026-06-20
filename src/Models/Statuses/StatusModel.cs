@@ -10,7 +10,7 @@ public partial class StatusModel : Model
 {
     [Export] public string Name { get; set; } = "Unnamed Status";
     [Export] public float Duration { get; set; } = 1f;
-    [Export] public required AbilityModel Ability { get; set; }
+    [Export] public TriggerModel[] Triggers { get; set; } = [];
     [Export] public required Texture2D Icon { get; set; }
     
     [ExportGroup("Stacks")] [Export] public int MaxStacks { get; set; } = 1;
@@ -39,5 +39,5 @@ public abstract record StackTimeoutBehavior;
 
 public record RemoveAllStackTimeoutBehavior : StackTimeoutBehavior;
 
-public record RemoveNStackTimeoutBehavior(int Count) : StackTimeoutBehavior;
+public record RemoveNStackTimeoutBehavior(int Amount) : StackTimeoutBehavior;
 

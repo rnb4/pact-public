@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="StatusModel" format=3 uid="uid://o4tlp86cs316"]
+
+[ext_resource type="Script" uid="uid://ocse5wnfp643" path="res://src/Models/Statuses/StatusModel.cs" id="1_knch0"]
+[ext_resource type="Texture2D" uid="uid://4w8nmqinpqjo" path="res://icon.svg" id="2_fhf8l"]
+[ext_resource type="Script" uid="uid://d4gubp0m4e3hh" path="res://src/Models/Effects/DamageEffectModel.cs" id="3_fhf8l"]
+[ext_resource type="Script" uid="uid://bf52tx7756a2p" path="res://src/Models/Statuses/RemoveNStacks.cs" id="3_vvins"]
+[ext_resource type="Script" uid="uid://c1yw4uku4foxy" path="res://src/Models/Triggers/ActivateTriggerModel.cs" id="4_vvins"]
+
+[sub_resource type="Resource" id="Resource_laham"]
+script = ExtResource("3_vvins")
+Amount = 1
+metadata/_custom_type_script = "uid://bf52tx7756a2p"
+
+[sub_resource type="Resource" id="Resource_ob05t"]
+script = ExtResource("3_fhf8l")
+DamageType = 1
+Amount = 10.0
+metadata/_custom_type_script = "uid://d4gubp0m4e3hh"
+
+[sub_resource type="Resource" id="Resource_fmvlf"]
+script = ExtResource("4_vvins")
+Effect = SubResource("Resource_ob05t")
+metadata/_custom_type_script = "uid://c1yw4uku4foxy"
+
+[resource]
+script = ExtResource("1_knch0")
+Name = "Burn"
+Duration = 3.0
+Triggers = [SubResource("Resource_fmvlf")]
+Icon = ExtResource("2_fhf8l")
+MaxStacks = 3
+StackTimeout = SubResource("Resource_laham")
+metadata/_custom_type_script = "uid://ocse5wnfp643"

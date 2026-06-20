@@ -78,9 +78,23 @@ public class Game
         foreach (var peer in Multiplayer.GetPeers())
         {
             var heroes = new List<HeroState>();
-            var heroQuery = new QueryDescription().WithAll<Hero, Position, Pool<Health>, Pool<Mana>, MetaData, LookDirection, PathMove>();
-            World.Query(in heroQuery, (Entity entity, ref Position position, ref Pool<Health> health, ref Pool<Mana> mana, ref MetaData meta, ref LookDirection lookDirection, ref PathMove pathMove) =>
+            var heroQuery = new QueryDescription().WithAll<Hero, Position, Pool<Health>, Pool<Mana>, MetaData, LookDirection, PathMove, Statuses>();
+            World.Query(in heroQuery, (Entity entity, ref Position position, ref Pool<Health> health, ref Pool<Mana> mana, ref MetaData meta, ref LookDirection lookDirection, ref PathMove pathMove, ref Statuses statuses) =>
             {
+                var statusStates = new StatusState[statuses.Active.Count];
+                for (var i = 0; i < statuses.Active.Count; i++)
+                {
+                    var status = statuses.Active[i];
+                    var iconPath = status.Model.Icon.ResourcePath;
+                    statusStates[i] = new StatusState
+                    {
+                        IconUid = ResourceUid.IdToText(ResourceLoader.GetResourceUid(iconPath)),
+                        Name = status.Model.Name,
+                        RemainingDuration = status.RemainingDuration,
+                        Duration = status.Model.Duration,
+                        CurrentStacks = status.CurrentStacks,
+                    };
+                }
                 heroes.Add(new HeroState
                 {
                     EntityId = entity.Id,
@@ -93,6 +107,7 @@ public class Game
                     MaxMana = mana.Max,
                     LookDirection = lookDirection.Value,
                     MoveDirection = pathMove.MoveDirection,
+                    Statuses = statusStates,
                 });
             });
 

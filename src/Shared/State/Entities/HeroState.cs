@@ -28,4 +28,5 @@ public partial struct HeroState : IEntity
     public string Name { get; set; }
     public Team Team { get; set; }
     public Vector2 Position { get; set; }
+    public StatusState[] Statuses { get; set; }
 }

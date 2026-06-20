@@ -56,9 +56,9 @@ public static class EffectOp
     {
         if (!context.Target.IsEntity) return Result.InvalidTarget;
         ref var statuses = ref Game.Instance.World.Get<Statuses>(context.Target.Entity);
-        foreach (var activeStatus in statuses.Active.Where(activeStatus => activeStatus.Model.ModelId == effect.ModelId))
+        foreach (var activeStatus in statuses.Active.Where(activeStatus => activeStatus.Model == effect.Status))
         {
-            activeStatus.CurrentStacks += 1;
+            activeStatus.CurrentStacks = Math.Min(activeStatus.CurrentStacks + 1, activeStatus.MaxStacks);
             if (activeStatus.StackApplication == StackApplicationBehavior.RefreshDuration)
                 activeStatus.RemainingDuration = effect.Status.Duration;
             return Result.Ok;
@@ -73,9 +73,10 @@ public static class EffectOp
             },
             StackApplication = effect.Status.StackApplication,
             MaxStacks = effect.Status.MaxStacks,
+            RemainingDuration = effect.Status.Duration,
         };
         statuses.Active.Add(status);
-        TriggerOp.Fire<OnAddTriggerModel>(effect.Status.Ability, context);
+        TriggerOp.Fire<OnAddTriggerModel>(effect.Status.Triggers, context);
         return Result.Ok;
     }
 

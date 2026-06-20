@@ -20,8 +20,8 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 80.0
 offset_bottom = 4.0
+mouse_filter = 2
 script = ExtResource("1_sig0t")
-metadata/_custom_type_script = "uid://cbpe0iqfmekjq"
 
 [node name="Recent" type="ProgressBar" parent="." unique_id=456732556]
 unique_name_in_owner = true
@@ -31,6 +31,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_av3me")
 theme_override_styles/fill = SubResource("StyleBoxFlat_tk8up")
 value = 75.0
@@ -44,6 +45,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_482li")
 theme_override_styles/fill = SubResource("StyleBoxFlat_t7rj1")
 value = 50.0

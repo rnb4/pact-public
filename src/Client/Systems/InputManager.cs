@@ -64,7 +64,9 @@ public partial class InputManager : Node2D
         NetworkManager.Instance.SendRequest(new CastRequest
         {
             EntityId = localEntityId,
-            Slot = slot.Value
+            Slot = slot.Value,
+            TargetEntityId = _hoveredHero?.Id,
+            TargetPosition = GetGlobalMousePosition()
         });
     }
 

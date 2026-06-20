@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ProjectileModel" format=3 uid="uid://m8p5eqbbpige"]
+
+[ext_resource type="Script" uid="uid://bj2joluftf8do" path="res://src/Models/ProjectileModel.cs" id="1_cs5kf"]
+[ext_resource type="Script" uid="uid://d4gubp0m4e3hh" path="res://src/Models/Effects/DamageEffectModel.cs" id="1_upcct"]
+[ext_resource type="Script" uid="uid://clto0iqjjaxya" path="res://src/Models/Effects/CompositeEffectModel.cs" id="2_xfsv3"]
+[ext_resource type="PackedScene" uid="uid://drh57raab4atr" path="res://scenes/views/projectiles/fire_ball_view.tscn" id="3_xfsv3"]
+
+[sub_resource type="Resource" id="Resource_2e08e"]
+script = ExtResource("1_upcct")
+DamageType = 1
+Amount = 20.0
+metadata/_custom_type_script = "uid://d4gubp0m4e3hh"
+
+[sub_resource type="Resource" id="Resource_wqstu"]
+script = ExtResource("2_xfsv3")
+Effects = [SubResource("Resource_2e08e")]
+metadata/_custom_type_script = "uid://clto0iqjjaxya"
+
+[resource]
+script = ExtResource("1_cs5kf")
+Lifetime = 3.0
+Radius = 3.0
+OnHitEffect = SubResource("Resource_wqstu")
+ViewScene = ExtResource("3_xfsv3")
+metadata/_custom_type_script = "uid://bj2joluftf8do"

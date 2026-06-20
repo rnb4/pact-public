@@ -3,10 +3,11 @@
 [ext_resource type="Script" uid="uid://nt3o3vydstvn" path="res://src/Client/Views/HeroView.cs" id="1_av3me"]
 [ext_resource type="PackedScene" uid="uid://dbvb15bv3046p" path="res://scenes/ui/overhead_hero_ui.tscn" id="2_av3me"]
 
-[node name="HeroView" type="Node2D" unique_id=625931354 node_paths=PackedStringArray("_healthBar", "_manaBar")]
+[node name="HeroView" type="Node2D" unique_id=625931354 node_paths=PackedStringArray("_healthBar", "_manaBar", "_statusBar")]
 script = ExtResource("1_av3me")
 _healthBar = NodePath("OverheadHeroUI/PanelContainer/MarginContainer/VBoxContainer/HealthBar")
 _manaBar = NodePath("OverheadHeroUI/PanelContainer/MarginContainer/VBoxContainer/ManaBar")
+_statusBar = NodePath("OverheadHeroUI/StatusBar")
 metadata/_custom_type_script = "uid://nt3o3vydstvn"
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=964990145]
