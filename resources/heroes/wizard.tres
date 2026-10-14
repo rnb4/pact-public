@@ -10,6 +10,7 @@
 script = ExtResource("2_yu340")
 Name = "Wizard"
 ViewScene = ExtResource("3_us8c4")
+Id = "uid://djm422fkm465x"
 PassiveAbility = ExtResource("2_us8c4")
 BasicAttack = ExtResource("1_yu340")
 Secondary = ExtResource("3_l5xlg")

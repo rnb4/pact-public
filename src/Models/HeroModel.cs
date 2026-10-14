@@ -8,6 +8,7 @@ public partial class HeroModel : Model, IHasView
 {
     [Export] public string Name { get; set; } = "Unnamed Hero";
     [Export] public PackedScene? ViewScene { get; set; }
+    [Export(PropertyHint.File, "*.tres")] public required string Id { get; set; }
 
     [ExportGroup("Abilities")] 
     
